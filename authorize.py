@@ -8,7 +8,12 @@ import requests
 import datetime
 from requests.auth import HTTPBasicAuth
 
-def fdmgettoken(fdm):
+def fdm_get_token(fdm):
+    """
+    This function gets an API token from the given FDM object, it will add the values to the FDM object.
+    :param fdm: FDM object which will create a token
+    :return: Returns the HTTP response from the FDM
+    """
     url = "https://{}:{}/api/fdm/v6/fdm/token".format(fdm.ip, fdm.port)
 
     payload = '{{"grant_type": "password","username": "{}","password": "{}"}}'.format(fdm.username, fdm.password)
@@ -28,7 +33,12 @@ def fdmgettoken(fdm):
     return response
 
 
-def asagettoken(asa):
+def asa_get_token(asa):
+    """
+    This function gets an API token from the given ASA object.
+    :param asa: ASA object which will create a token
+    :return: Returns an X-Auth-Token
+    """
     url = "https://" + asa.ip + ":" + asa.port + "/api/tokenservices"
 
     basicauth = HTTPBasicAuth(asa.username, asa.password)

@@ -5,12 +5,14 @@
 # 20th December 2021
 
 
-# Rename file to 'config.py'
+# Copy file to 'config.py'
+# ASA device credentials
 asaip = ""
 asausername = ""
 asapassword = ""
 asaport = ""
 
+# FDM device credentials
 ftdip = ""
 ftdusername = ""
 ftdpassword = ""

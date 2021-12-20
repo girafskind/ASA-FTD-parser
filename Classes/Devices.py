@@ -1,5 +1,5 @@
 # ASA-FTD object parser
-# classes.py - class file
+# Devices.py - class file
 # Version 1.0
 # By Bo V Mortensen
 # 20th December 2021

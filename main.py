@@ -4,54 +4,75 @@
 # By Bo V Mortensen
 # 20th December 2021
 
+from Services import fdm_functions, asa_functions, fdm_deploy_functions
+from Classes import Devices
 import authorize
 import config
-import classes
-import net_objects
-import netgroup_objects
-import fdmdeploy
 
 
 def main():
-    fdm1 = initfdm()
-    asa1 = initasa()
+    """
+    Main function which initialized one ASA and one FDM object, from the credentials entered in the config.py file.
+    Then parse all objects on the ASA to the FDM.
+    """
+    fdm1 = initialize_fdm()
+    asa1 = initialize_asa()
 
-    parseobjects(asa1, fdm1)
+    parse_objects(asa1, fdm1)
 
 
-def parseobjects(asa, fdm):
-    asa_objects = net_objects.getallasanetworkobjects(asa)
+def parse_objects(asa, fdm):
+    """
+    Function which first get all objects from ASA as a list, then creates them on the FDM.
+    Then gets all object-groups from ASA as a list, then creates them on the FDM.
+    An object-group cannot contain a object which does not exist.
+    :param asa: Soruce ASA
+    :param fdm: Destination FDM
+    :return: Nothing
+    """
+    asa_objects = asa_functions.get_all_asa_network_objects(asa)
     for asa_object in asa_objects:
-        net_objects.createfdmnetworkobject(fdm, asa_object)
+        fdm_functions.create_fdm_network_object(fdm, asa_object)
 
-    asanetgroups = netgroup_objects.getallasanetworkgroups(asa)
+    asanetgroups = asa_functions.get_all_asa_network_groups(asa)
     for group in asanetgroups:
-        netgroup_objects.createfdmnetworkgroup(fdm, group)
+        fdm_functions.create_fdm_network_group(fdm, group)
 
 
-def initfdm():
-    newfdm = classes.FTDClass()
+def initialize_fdm():
+    """
+    Initialize a FDM object from info entered in config.py
+    :return: A FDM object, containing an access- and refresh-token.
+    """
+    newfdm = Devices.FTDClass()
     newfdm.ip = config.ftdip
     newfdm.username = config.ftdusername
     newfdm.password = config.ftdpassword
-    authorize.fdmgettoken(newfdm)
+    authorize.fdm_get_token(newfdm)
 
     return newfdm
 
 
-def initasa():
-    newasa = classes.ASAClass()
+def initialize_asa():
+    """
+    Initialize a ASA object from info entered in config.py
+    :return: A ASA object, containing an access-token.
+    """
+    newasa = Devices.ASAClass()
     newasa.ip = config.asaip
     newasa.username = config.asausername
     newasa.password = config.asapassword
     newasa.port = config.asaport
-    newasa.token = authorize.asagettoken(newasa)
+    newasa.token = authorize.asa_get_token(newasa)
 
     return newasa
 
 
-def testfdmdeploy(fdm):
-    fdmdeploy.deployfdm(fdm)
+def deploy_config_to_fdm(fdm):
+    """
+    Function which initiates deployment of the configuration on given FDM device.
+    """
+    fdm_deploy_functions.deployfdm(fdm)
 
 
 if __name__ == '__main__':

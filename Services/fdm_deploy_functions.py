@@ -1,5 +1,5 @@
 # ASA-FTD object parser
-# fdmdeploy.py - Deploy FDM config
+# fdm_deploy_functions.py - Deploy FDM config
 # Version 1.0
 # By Bo V Mortensen
 # 20th December 2021
@@ -20,8 +20,8 @@ def deployfdm(fdm):
 
     return response
 
-def checkdeployment(fdm,id):
-    url = "https://" + fdm.ip + ":" + fdm.port + "/api/fdm/v6/operational/deploy/"+id
+def checkdeployment(fdm, deployment_id):
+    url = "https://" + fdm.ip + ":" + fdm.port + "/api/fdm/v6/operational/deploy/"+deployment_id
 
     payload = {}
 

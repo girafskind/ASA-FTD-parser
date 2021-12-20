@@ -6,6 +6,7 @@ Python script for configuring objects and object-groups taken from a running ASA
   - [ ] Handle HTTP error code 422, duplicate entry
   - [ ] Handle HTTP error code 'unauthorized'    
 - [ ] Handle service objects
+- [ ] Report to user wheter the migration was a success
 
 ### In progess
 - Handle deployment status
