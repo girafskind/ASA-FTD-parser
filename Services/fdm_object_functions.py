@@ -1,5 +1,5 @@
 # ASA-FTD object parser
-# fdm_functions.py
+# fdm_object_functions.py
 # By Bo V Mortensen
 # Version 1.0
 # 20th December 2021

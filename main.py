@@ -4,7 +4,7 @@
 # By Bo V Mortensen
 # 20th December 2021
 
-from Services import fdm_functions, asa_functions, fdm_deploy_functions
+from Services import fdm_object_functions, asa_object_functions, fdm_deploy_functions
 from Classes import Devices
 import authorize
 import config
@@ -30,13 +30,13 @@ def parse_objects(asa, fdm):
     :param fdm: Destination FDM
     :return: Nothing
     """
-    asa_objects = asa_functions.get_all_asa_network_objects(asa)
+    asa_objects = asa_object_functions.get_all_asa_network_objects(asa)
     for asa_object in asa_objects:
-        fdm_functions.create_fdm_network_object(fdm, asa_object)
+        fdm_object_functions.create_fdm_network_object(fdm, asa_object)
 
-    asanetgroups = asa_functions.get_all_asa_network_groups(asa)
+    asanetgroups = asa_object_functions.get_all_asa_network_groups(asa)
     for group in asanetgroups:
-        fdm_functions.create_fdm_network_group(fdm, group)
+        fdm_object_functions.create_fdm_network_group(fdm, group)
 
 
 def initialize_fdm():

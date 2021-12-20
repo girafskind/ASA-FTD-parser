@@ -10,6 +10,7 @@ Python script for configuring objects and object-groups taken from a running ASA
 
 ### In progess
 - Handle deployment status
+- Delete every non-system-defined object on FDM
 
 ### Completed Tasks ✓
 - [x] Get token from ASA
