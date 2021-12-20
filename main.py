@@ -13,7 +13,38 @@ import fdmdeploy
 def main():
     #testfdm()
     #testasa()
-    testfdmdeploy()
+    #testfdmdeploy()
+    #print(fdmdeploy.checkdeployment(initfdm(), "b79ada31-618b-11ec-88ad-fb547127ddb6").get('statusMessage'))
+    #getasanetgroups()
+
+def initfdm():
+    hawkfp01 = classes.FTDClass()
+    hawkfp01.ip = config.ftdip
+    hawkfp01.username = config.ftdusername
+    hawkfp01.password = config.ftdpassword
+    authorize.fdmgettoken(hawkfp01)
+
+
+    return hawkfp01
+
+def initasa():
+    hawkasa01 = classes.ASAClass()
+    hawkasa01.ip = config.asaip
+    hawkasa01.username = config.asausername
+    hawkasa01.password = config.asapassword
+    hawkasa01.port = config.asaport
+    hawkasa01.token = authorize.asagettoken(hawkasa01)
+
+
+    return hawkasa01
+
+def getasanetgroups():
+    asa = initasa()
+    fdm = initfdm()
+
+    asanetgroups = netgroup_objects.getallasanetworkgroups(asa)
+
+    netgroup_objects.parseasanetgroups(fdm,asanetgroups)
 
 
 def testasa():

@@ -74,3 +74,18 @@ def asagettoken(asa):
     response = requests.request("POST", url, auth=basicauth, headers=headers, data=payload, verify=False)
 
     return response.headers['X-Auth-Token']
+
+def asalogout(asa):
+    url = "https://" + asa.ip + ":" + asa.port + "/api/tokenservices"
+
+    basicauth = HTTPBasicAuth(asa.username, asa.password)
+
+    payload = {}
+    headers = {
+        'Content-Type': 'application/json',
+        'User-agent': 'REST API Agent'
+    }
+
+    response = requests.request("POST", url, auth=basicauth, headers=headers, data=payload, verify=False)
+
+    return response.headers['X-Auth-Token']

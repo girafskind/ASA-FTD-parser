@@ -16,4 +16,19 @@ def deployfdm(fdm):
     }
 
     response = requests.request("POST", url, headers=headers, data=payload, verify=False).json()
-    print(response)
+
+    return response
+
+def checkdeployment(fdm,id):
+    url = "https://" + fdm.ip + ":" + fdm.port + "/api/fdm/v6/operational/deploy/"+id
+
+    payload = {}
+
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + fdm.access_token
+    }
+
+    response = requests.request("GET", url, headers=headers, data=payload, verify=False).json()
+
+    return response

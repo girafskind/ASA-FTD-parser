@@ -5,6 +5,7 @@
 
 # Get network objects-groups from asa
 import requests
+import json
 
 
 def getallasanetworkgroups(asa):
@@ -53,3 +54,38 @@ def getasanetworkgroups(asa, limit=100, offset=0):
     response = requests.request("GET", url, headers=headers, verify=False).json()['items']
 
     return response
+
+
+def parseasanetgroups(fdm, netgroups):
+
+    for group in netgroups:
+        createfdmnetworkgroup(fdm, group)
+
+
+def createfdmnetworkgroup(fdm, objectgroup):
+    url = "https://"+fdm.ip+":"+fdm.port+"/api/fdm/v6/object/networkgroups"
+
+    prepayload = {
+        'name': objectgroup.get('objectId'),
+        'type': 'networkobjectgroup',
+        'objects': []
+    }
+
+    for groupmember in objectgroup.get('members'):
+        #print("new object")
+        #print(groupmember)
+        prepayload['objects'].append(
+            {'name': groupmember.get('objectId'),
+             'type': 'networkobject'
+             }
+        )
+
+    payload = json.dumps(prepayload)
+
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + fdm.access_token
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload, verify=False).json()
+    print(response)
