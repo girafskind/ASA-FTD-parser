@@ -17,7 +17,7 @@ def parse_asa_network_groups(fdm, netgroups):
         fdm_object_functions.create_fdm_network_group(fdm, group)
 
 
-def get_number_of_network_objects(asa):
+def get_number_of_asa_network_objects(asa):
     """
     Returns the number of network objects the given ASA object has configured.
     :param asa: ASA device to count network objects.
@@ -40,7 +40,7 @@ def get_number_of_network_objects(asa):
     return response['rangeInfo']['total']
 
 
-def get_number_of_network_groups(asa):
+def get_number_of_asa_network_groups(asa):
     """
     Returns the number of network object-groups the given ASA object has configured.
     :param asa: ASA device to count network object-groups.
@@ -65,7 +65,7 @@ def get_all_asa_network_objects(asa):
     :param asa: The ASA which to retrieve objects from
     :return: All objects in a list
     """
-    totalobjects = get_number_of_network_objects(asa)
+    totalobjects = get_number_of_asa_network_objects(asa)
 
     offset = 0
     asaobjects = []
@@ -83,7 +83,7 @@ def get_all_asa_network_groups(asa):
     :param asa: The ASA which to retrieve object-groups from
     :return: All object-groups in a list
     """
-    totalobjects = get_number_of_network_groups(asa)
+    totalobjects = get_number_of_asa_network_groups(asa)
 
     offset = 0
     asaobjects = []

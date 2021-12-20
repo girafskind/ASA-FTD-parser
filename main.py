@@ -17,7 +17,6 @@ def main():
     """
     fdm1 = initialize_fdm()
     asa1 = initialize_asa()
-
     parse_objects(asa1, fdm1)
 
 
@@ -31,6 +30,7 @@ def parse_objects(asa, fdm):
     :return: Nothing
     """
     asa_objects = asa_object_functions.get_all_asa_network_objects(asa)
+
     for asa_object in asa_objects:
         fdm_object_functions.create_fdm_network_object(fdm, asa_object)
 
@@ -73,6 +73,16 @@ def deploy_config_to_fdm(fdm):
     Function which initiates deployment of the configuration on given FDM device.
     """
     fdm_deploy_functions.deployfdm(fdm)
+
+
+def delete_all_objects(fdm):
+    """
+    Function which first deletes network object-groups, then network objects.
+    :param fdm: FDM object
+    :return: None
+    """
+    fdm_object_functions.delete_all_fdm_object_groups(fdm)
+    fdm_object_functions.delete_all_fdm_objects(fdm)
 
 
 if __name__ == '__main__':

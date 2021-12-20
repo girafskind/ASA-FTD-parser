@@ -78,3 +78,109 @@ def create_fdm_network_group(fdm, objectgroup):
     response = requests.request("POST", url, headers=headers, data=payload, verify=False).json()
 
     return response
+
+def get_fdm_objects(fdm):
+    """
+    Get all network objects on FDM
+    :param fdm:
+    :return: List containing all network objects
+    """
+    url = "https://" + fdm.ip + ":" + fdm.port + "/api/fdm/v6/object/networks"
+
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + fdm.access_token
+    }
+
+    response = requests.request("GET", url, headers=headers, verify=False).json()
+
+    return response
+
+
+def get_fdm_object_groups(fdm):
+    """
+    Get all network object-groups on FDM
+    :param fdm:
+    :return: List containing all network object-groups
+    """
+    url = "https://" + fdm.ip + ":" + fdm.port + "/api/fdm/v6/object/networkgroups"
+
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + fdm.access_token
+    }
+
+    response = requests.request("GET", url, headers=headers, verify=False).json()
+
+
+def get_all_fdm_objects(fdm, limit=100, offset=0):
+    """
+    Get all network objects on FDM, limit=0 returns all objects
+    :param fdm:
+    :return: List containing all network objecs
+    """
+    url = "https://" + fdm.ip + ":" + fdm.port + "/api/fdm/v6/object/networks?offset="+str(offset)+"&limit="+str(limit)
+
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + fdm.access_token
+    }
+
+    response = requests.request("GET", url, headers=headers, verify=False).json()
+
+    return response
+
+def get_all_fdm_object_groups(fdm, limit=100, offset=0):
+    """
+    Get all network object-groups on FDM, limit=0 returns all object-groups
+    :param fdm:
+    :return: List containing all network object-groups
+    """
+    url = "https://" + fdm.ip + ":" + fdm.port + "/api/fdm/v6/object/networkgroups?offset="+str(offset)+"&limit="+str(limit)
+
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + fdm.access_token
+    }
+
+    response = requests.request("GET", url, headers=headers, verify=False).json()
+
+    return response
+
+def delete_all_fdm_objects(fdm):
+    """
+    Deletes all objects on FDM which does not have isSystemDefined=true
+    :param fdm: FDM object
+    :return: Nothing
+    """
+    all_objects = get_all_fdm_objects(fdm, limit=0)
+
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + fdm.access_token
+    }
+
+    for network_object in all_objects['items']:
+        network_object_id = network_object['id']
+        url = "https://" + fdm.ip + ":" + fdm.port + "/api/fdm/v6/object/networks/" + network_object_id
+        response = requests.request("DELETE", url, headers=headers, verify=False)
+
+def delete_all_fdm_object_groups(fdm):
+    """
+    Deletes all object-groups on FDM which does not have isSystemDefined=true
+    :param fdm: FDM object
+    :return: Nothing
+    """
+
+    all_object_groups = get_all_fdm_object_groups(fdm, limit=0)
+
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + fdm.access_token
+    }
+
+    for object_group in all_object_groups['items']:
+        network_group_id = object_group['id']
+        url = "https://" + fdm.ip + ":" + fdm.port + "/api/fdm/v6/object/networkgroups/"+network_group_id
+        response = requests.request("DELETE", url, headers=headers, verify=False)
+
