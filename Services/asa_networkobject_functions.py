@@ -1,12 +1,12 @@
 # ASA-FTD object parser
-# asa_object_functions.py
+# asa_networkobject_functions.py
 # By Bo V Mortensen
 # Version 1.0
 # 20th December 2021
 # Functions towards Cisco ASA
 
 import requests
-from Services import fdm_object_functions
+from Services import fdm_networkobject_functions
 
 
 def parse_asa_network_groups(fdm, netgroups):
@@ -14,7 +14,7 @@ def parse_asa_network_groups(fdm, netgroups):
     This function takes all network-group objects, then pushes them one after one to the given FDM object.
     """
     for group in netgroups:
-        fdm_object_functions.create_fdm_network_group(fdm, group)
+        fdm_networkobject_functions.create_fdm_network_group(fdm, group)
 
 
 def get_number_of_asa_network_objects(asa):
