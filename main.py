@@ -10,8 +10,8 @@ import net_objects
 import netgroup_objects
 import fdmdeploy
 
-def main():
 
+def main():
     fdm1 = initfdm()
     asa1 = initasa()
 
