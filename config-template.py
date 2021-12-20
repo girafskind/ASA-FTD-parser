@@ -4,7 +4,7 @@
 # By Bo V Mortensen
 
 
-### Rename file to 'config.py'
+# Rename file to 'config.py'
 asaip = ""
 asausername = ""
 asapassword = ""

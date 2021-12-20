@@ -11,80 +11,47 @@ import netgroup_objects
 import fdmdeploy
 
 def main():
-    #testfdm()
-    #testasa()
-    #testfdmdeploy()
-    #print(fdmdeploy.checkdeployment(initfdm(), "b79ada31-618b-11ec-88ad-fb547127ddb6").get('statusMessage'))
-    #getasanetgroups()
 
-def initfdm():
-    hawkfp01 = classes.FTDClass()
-    hawkfp01.ip = config.ftdip
-    hawkfp01.username = config.ftdusername
-    hawkfp01.password = config.ftdpassword
-    authorize.fdmgettoken(hawkfp01)
+    fdm1 = initfdm()
+    asa1 = initasa()
+
+    parseobjects(asa1, fdm1)
 
 
-    return hawkfp01
-
-def initasa():
-    hawkasa01 = classes.ASAClass()
-    hawkasa01.ip = config.asaip
-    hawkasa01.username = config.asausername
-    hawkasa01.password = config.asapassword
-    hawkasa01.port = config.asaport
-    hawkasa01.token = authorize.asagettoken(hawkasa01)
-
-
-    return hawkasa01
-
-def getasanetgroups():
-    asa = initasa()
-    fdm = initfdm()
+def parseobjects(asa, fdm):
+    asa_objects = net_objects.getallasanetworkobjects(asa)
+    for asa_object in asa_objects:
+        net_objects.createfdmnetworkobject(fdm, asa_object)
 
     asanetgroups = netgroup_objects.getallasanetworkgroups(asa)
+    for group in asanetgroups:
+        netgroup_objects.createfdmnetworkgroup(fdm, group)
 
-    netgroup_objects.parseasanetgroups(fdm,asanetgroups)
+
+def initfdm():
+    newfdm = classes.FTDClass()
+    newfdm.ip = config.ftdip
+    newfdm.username = config.ftdusername
+    newfdm.password = config.ftdpassword
+    authorize.fdmgettoken(newfdm)
+
+    return newfdm
 
 
-def testasa():
-    hawkasa01 = classes.ASAClass()
-    hawkasa01.ip = config.asaip
-    hawkasa01.username = config.asausername
-    hawkasa01.password = config.asapassword
-    hawkasa01.port = config.asaport
-    hawkasa01.token = authorize.asagettoken(hawkasa01)
+def initasa():
+    newasa = classes.ASAClass()
+    newasa.ip = config.asaip
+    newasa.username = config.asausername
+    newasa.password = config.asapassword
+    newasa.port = config.asaport
+    newasa.token = authorize.asagettoken(newasa)
 
-    asaobj = net_objects.getallasanetworkobjects(hawkasa01)
-    print(asaobj[0])
-    print(asaobj[0]['name'])
-    print(asaobj[0]['host']['kind'])
-    print(asaobj[0]['host']['value'])
+    return newasa
 
-    #testfdm(asaobj[0])
-    for object in asaobj:
-        testfdm(object)
 
-def testfdm(object):
-    hawkfp01 = classes.FTDClass()
-    hawkfp01.ip = config.ftdip
-    hawkfp01.username = config.ftdusername
-    hawkfp01.password = config.ftdpassword
+def testfdmdeploy(fdm):
+    fdmdeploy.deployfdm(fdm)
 
-    authorize.fdmgettoken(hawkfp01)
-
-    print(hawkfp01.expires)
-    print(hawkfp01.refresh_expires)
-    net_objects.createfdmnetworkobject(hawkfp01,object)
-
-def testfdmdeploy():
-    hawkfp01 = classes.FTDClass()
-    hawkfp01.ip = config.ftdip
-    hawkfp01.username = config.ftdusername
-    hawkfp01.password = config.ftdpassword
-    authorize.fdmgettoken(hawkfp01)
-
-    fdmdeploy.deployfdm(hawkfp01)
 
 if __name__ == '__main__':
     main()
