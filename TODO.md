@@ -8,6 +8,7 @@ Python script for configuring objects and object-groups taken from a running ASA
 - [ ] Handle service objects
 
 ### In progess
+- Handle deployment status
 
 ### Completed Tasks ✓
 - [x] Get token from ASA
