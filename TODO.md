@@ -5,12 +5,11 @@ Python script for configuring objects and object-groups taken from a running ASA
 - [ ] Handle HTTP error codes 
   - [ ] Handle HTTP error code 422, duplicate entry
   - [ ] Handle HTTP error code 'unauthorized'    
-- [ ] Handle service objects
+- [ ] Handle service/port objects
 - [ ] Report to user wheter the migration was a success
 
 ### In progess
 - Handle deployment status
-- Delete every non-system-defined object on FDM
 
 ### Completed Tasks ✓
 - [x] Get token from ASA
@@ -19,3 +18,4 @@ Python script for configuring objects and object-groups taken from a running ASA
 - [x] Get network object-groups from ASA
 - [x] Parse network objects from to FDM
 - [x] Parse network object-groups to FDM
+- [x] Delete every non-system-defined object on FDM
