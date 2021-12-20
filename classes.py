@@ -1,7 +1,8 @@
 # ASA-FTD object parser
 # classes.py - class file
-# By Bo Vittus Mortensen
-# Version 0.1
+# Version 1.0
+# By Bo V Mortensen
+# 20th December 2021
 
 # ASA device class
 class ASAClass:

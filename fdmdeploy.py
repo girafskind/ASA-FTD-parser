@@ -1,7 +1,8 @@
 # ASA-FTD object parser
 # fdmdeploy.py - Deploy FDM config
-# Version 0.1
+# Version 1.0
 # By Bo V Mortensen
+# 20th December 2021
 
 import requests
 

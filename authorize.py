@@ -1,10 +1,10 @@
-# authorize.py - Authorization against FxOS
-# Version 0.1
+# ASA-FTD object parser
+# authorize.py - Authorization against ASA and FDM
+# Version 1.0
 # By Bo V Mortensen
+# 20th December 2021
 
 import requests
-import config
-import json
 import datetime
 from requests.auth import HTTPBasicAuth
 

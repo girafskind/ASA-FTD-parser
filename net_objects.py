@@ -1,7 +1,8 @@
 # ASA-FTD object parser
 # net_objects.py
-# By Bo Vittus Mortensen
-# Version 0.1
+# By Bo V Mortensen
+# Version 1.0
+# 20th December 2021
 
 # Get network objects from asa
 import http
@@ -23,7 +24,6 @@ def getallasanetworkobjects(asa):
 
 def getnumberofnetworkobjects(asa):
     url = "https://" + asa.ip + ":" + asa.port + "/api/objects/networkobjects?limit=1"
-    #print(url)
 
     objects = {}
 
@@ -42,7 +42,7 @@ def getnumberofnetworkobjects(asa):
 
 def getasanetworkobjects(asa, limit=100, offset=0):
     url = "https://" + asa.ip + ":" + asa.port + "/api/objects/networkobjects?limit="+str(limit)+"&offset="+str(offset)
-    #print(url)
+
     payload = {
     }
 
@@ -77,12 +77,11 @@ def createfdmnetworkobject(fdm,object):
         "type": "networkobject"
     })
 
-    print(payload)
-
     headers = {
         'Accept': 'application/json',
         'Authorization': 'Bearer ' + fdm.access_token
     }
 
     response = requests.request("POST", url, headers=headers, data=payload, verify=False).json()
-    print(response)
+
+    return response

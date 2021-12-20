@@ -1,7 +1,8 @@
 # ASA-FTD object parser
 # netgroup_objects.py
-# By Bo Vittus Mortensen
-# Version 0.1
+# By Bo V Mortensen
+# Version 1.0
+# 20th December 2021
 
 # Get network objects-groups from asa
 import requests
@@ -22,7 +23,6 @@ def getallasanetworkgroups(asa):
 
 def getnumberofnetworkgroups(asa):
     url = "https://" + asa.ip + ":" + asa.port + "/api/objects/networkobjectgroups?limit=1"
-    #print(url)
 
     objects = {}
 
@@ -41,7 +41,7 @@ def getnumberofnetworkgroups(asa):
 
 def getasanetworkgroups(asa, limit=100, offset=0):
     url = "https://" + asa.ip + ":" + asa.port + "/api/objects/networkobjectgroups?limit="+str(limit)+"&offset="+str(offset)
-    #print(url)
+
     payload = {
     }
 
@@ -72,8 +72,6 @@ def createfdmnetworkgroup(fdm, objectgroup):
     }
 
     for groupmember in objectgroup.get('members'):
-        #print("new object")
-        #print(groupmember)
         prepayload['objects'].append(
             {'name': groupmember.get('objectId'),
              'type': 'networkobject'
@@ -88,4 +86,5 @@ def createfdmnetworkgroup(fdm, objectgroup):
     }
 
     response = requests.request("POST", url, headers=headers, data=payload, verify=False).json()
-    print(response)
+
+    return response
