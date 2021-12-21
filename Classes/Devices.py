@@ -12,6 +12,10 @@ class ASAClass:
     token = ""
     port = "443"
 
+    def url(self):
+        url = "https://" + self.ip + ":" + self.port
+        return url
+
 
 # FTD device class
 class FTDClass:
@@ -23,3 +27,7 @@ class FTDClass:
     expires = ""
     refresh_expires = ""
     port = "443"
+
+    def url(self):
+        url = "https://" + self.ip + ":" + self.port
+        return url
