@@ -15,7 +15,7 @@ def get_number_of_service_objects(asa):
 def get_all_service_objects(asa):
     """
     This functions retreives all service-objects.
-    :param asa: ASA device which to retreive the objects from
+    :param asa: ASA device which to retrieve the objects from ASA
     :return: Returns list of service objects.
     """
     url = asa.url() + "/api/objects/networkservices"
@@ -31,4 +31,19 @@ def get_all_service_objects(asa):
     return response
 
 def get_all_service_groups(asa):
-    pass
+    """
+    This function retrieves all service groups from ASA
+    :param asa: ASA device which to retrieve the objects from ASA
+    :return: Returns list of service objects.
+    """
+    url = asa.url() + "/api/objects/networkservicegroups"
+
+    headers = {
+        'Content-Type': 'application/json',
+        'User-agent': 'REST API Agent',
+        'X-Auth-Token': asa.token
+    }
+
+    response = requests.request("GET", url, headers=headers, verify=False).json()['items']
+
+    return response

@@ -7,6 +7,7 @@ Python script for configuring objects and object-groups taken from a running ASA
   - [ ] Handle HTTP error code 'unauthorized'    
 - [ ] Handle service/port objects
 - [ ] Report to user wheter the migration was a success
+- [ ] If a network group contains an IP host/subnet, it must be converted to an object before its assigned to the group. 
 
 ### In progess
 - Handle deployment status
