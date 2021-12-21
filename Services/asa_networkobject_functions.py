@@ -14,7 +14,7 @@ def get_number_of_asa_network_objects(asa):
     :param asa: ASA device to count network objects.
     :return: Integer which describes how many objects is found on ASA.
     """
-    url = "https://" + asa.ip + ":" + asa.port + "/api/objects/networkobjects?limit=1"
+    url = asa.url() + "/api/objects/networkobjects?limit=1"
 
     headers = {
         'Content-Type': 'application/json',
@@ -33,7 +33,7 @@ def get_number_of_asa_network_groups(asa):
     :param asa: ASA device to count network object-groups.
     :return: Integer which describes how many object-groups is found on ASA.
     """
-    url = "https://" + asa.ip + ":" + asa.port + "/api/objects/networkobjectgroups?limit=1"
+    url = asa.url() + "/api/objects/networkobjectgroups?limit=1"
 
     headers = {
         'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ def get_asa_network_objects(asa, limit=100, offset=0):
     :param offset: Which index to start from.
     :return: Returns <limit> ASA objects, starting from <limit>
     """
-    url = "https://" + asa.ip + ":" + asa.port + "/api/objects/networkobjects?limit="+str(limit)+"&offset="+str(offset)
+    url = asa.url() + "/api/objects/networkobjects?limit="+str(limit)+"&offset="+str(offset)
 
     headers = {
         'Content-Type': 'application/json',
@@ -116,7 +116,7 @@ def get_asa_network_groups(asa, limit=100, offset=0):
     :param offset: Which index to start from.
     :return: Returns <limit> ASA object-groups, starting from <limit>
     """
-    url = "https://" + asa.ip + ":" + asa.port + "/api/objects/networkobjectgroups?limit="\
+    url = asa.url() + "/api/objects/networkobjectgroups?limit="\
           + str(limit)+"&offset=" + str(offset)
 
     headers = {

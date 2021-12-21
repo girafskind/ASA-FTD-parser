@@ -4,7 +4,8 @@
 # By Bo V Mortensen
 # 20th December 2021
 
-from Services import fdm_networkobject_functions, asa_networkobject_functions, fdm_deploy_functions
+from Services import asa_networkobject_functions, asa_networkservice_functions
+from Services import fdm_networkobject_functions, fdm_deploy_functions
 from Classes import Devices, Migration
 import authorize
 import config
@@ -15,11 +16,19 @@ def main():
     Main function which initialized one ASA and one FDM object, from the credentials entered in the config.py file.
     Then parse all objects on the ASA to the FDM.
     """
-    fdm1 = initialize_fdm()
+#    fdm1 = initialize_fdm()
     asa1 = initialize_asa()
 
-    migration1 = Migration.MigrationStatus()
-    parse_objects(asa1, fdm1, migration1)
+#    migration1 = Migration.MigrationStatus()
+#    parse_objects(asa1, fdm1, migration1)
+
+    """
+    ### START TEST ###
+    """
+    print(asa_networkservice_functions.get_all_service_objects(asa1))
+    """
+    ### END TEST ###
+    """
 
 
 def parse_objects(asa, fdm, mig):
