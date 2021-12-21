@@ -21,7 +21,9 @@ Copy "config-template.py" to "config.py", enter IP-address, username and passwor
 
 The script does not deploy the new configration the FDM device, either done manually in the FDM WebUI, or call the "deploy_config_to_fdm" function with the FDM object as argument. 
 
-NB: Current version does not notify if the migration is completed sucessfully.
+The script will print out its progess, how many found networks and groups on the ASA. 
+How many objects migrated and how many skipped, as well as a list of the skipped objects.
+
 
 Written in Python 3.9
 

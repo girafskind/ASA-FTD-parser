@@ -6,6 +6,7 @@
 
 import requests
 
+
 def deployfdm(fdm):
     url = "https://" + fdm.ip + ":" + fdm.port + "/api/fdm/v6/operational/deploy"
 
@@ -19,6 +20,7 @@ def deployfdm(fdm):
     response = requests.request("POST", url, headers=headers, data=payload, verify=False).json()
 
     return response
+
 
 def checkdeployment(fdm, deployment_id):
     url = "https://" + fdm.ip + ":" + fdm.port + "/api/fdm/v6/operational/deploy/"+deployment_id

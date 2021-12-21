@@ -5,15 +5,18 @@
 # 20th December 2021
 # Functions towards Cisco FDM
 
+import sys
 import requests
 import json
 
-def create_fdm_network_object(fdm, asanetobj):
+
+def create_fdm_network_object(fdm, asanetobj, migration):
     """
     This function creates an object on the FDM device, accepts all types of network objects:
     Host, subnet, FQDN or IP-address range.
     :param fdm: Receiving FDM object
     :param asanetobj: ASA network object
+    :param migration: Migration status class
     :return: Response from FDM device
     """
     url = "https://"+fdm.ip+":"+fdm.port+"/api/fdm/v6/object/networks"
@@ -41,16 +44,36 @@ def create_fdm_network_object(fdm, asanetobj):
         'Authorization': 'Bearer ' + fdm.access_token
     }
 
-    response = requests.request("POST", url, headers=headers, data=payload, verify=False).json()
+    try:
+        response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+        response.raise_for_status()
+    except requests.exceptions.HTTPError:
+        if response.status_code == 400:
+            print("Got HTTP error 400, bad request or login credentials")
+        if response.status_code == 422:
+            print("Got HTTP error 422, duplicate element: " + payload)
+            migration.skipped_objects.append(payload)
+            migration.add_duplicate()
+            return
+        sys.exit()
+    except requests.exceptions.ConnectionError as errc:
+        print("An error connecting to API occurered: " + repr(errc))
+        sys.exit()
+    except requests.exceptions:
+        print("Something else happened")
+        sys.exit()
 
-    return response
+    migration.add_migrated_net()
+
+    return response.json()
 
 
-def create_fdm_network_group(fdm, objectgroup):
+def create_fdm_network_group(fdm, objectgroup, migration):
     """
     This function creates an object-group on the FDM device.
     :param fdm: Receiving FDM object
     :param objectgroup: ASA network object-group
+    :param migration: Migration status class
     :return: Response from FDM device
     """
     url = "https://"+fdm.ip+":"+fdm.port+"/api/fdm/v6/object/networkgroups"
@@ -75,9 +98,29 @@ def create_fdm_network_group(fdm, objectgroup):
         'Authorization': 'Bearer ' + fdm.access_token
     }
 
-    response = requests.request("POST", url, headers=headers, data=payload, verify=False).json()
+    try:
+        response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+        response.raise_for_status()
+    except requests.exceptions.HTTPError:
+        if response.status_code == 400:
+            print("Got HTTP error 400, bad request or login credentials")
+        if response.status_code == 422:
+            print("Got HTTP error 422, duplicate element: " + payload)
+            migration.skipped_objects.append(payload)
+            migration.add_duplicate()
+            return
+        sys.exit()
+    except requests.exceptions.ConnectionError as errc:
+        print("An error connecting to API occurered: " + repr(errc))
+        sys.exit()
+    except requests.exceptions:
+        print("Something else happened")
+        sys.exit()
 
-    return response
+    migration.add_migrated_group()
+
+    return response.json()
+
 
 def get_fdm_objects(fdm):
     """
@@ -112,11 +155,15 @@ def get_fdm_object_groups(fdm):
 
     response = requests.request("GET", url, headers=headers, verify=False).json()
 
+    return response
+
 
 def get_all_fdm_objects(fdm, limit=100, offset=0):
     """
     Get all network objects on FDM, limit=0 returns all objects
-    :param fdm:
+    :param fdm: FDM object
+    :param limit: Integer 0-100, how many objects to return
+    :param offset: Integer, starting point of objects
     :return: List containing all network objecs
     """
     url = "https://" + fdm.ip + ":" + fdm.port + "/api/fdm/v6/object/networks?offset="+str(offset)+"&limit="+str(limit)
@@ -130,13 +177,17 @@ def get_all_fdm_objects(fdm, limit=100, offset=0):
 
     return response
 
+
 def get_all_fdm_object_groups(fdm, limit=100, offset=0):
     """
     Get all network object-groups on FDM, limit=0 returns all object-groups
     :param fdm:
+    :param limit: Integer 0-100, how many objects to return
+    :param offset: Integer, starting point of objects
     :return: List containing all network object-groups
     """
-    url = "https://" + fdm.ip + ":" + fdm.port + "/api/fdm/v6/object/networkgroups?offset="+str(offset)+"&limit="+str(limit)
+    url = "https://" + fdm.ip + ":" + fdm.port + "/api/fdm/v6/object/networkgroups?offset="\
+          + str(offset) + "&limit=" + str(limit)
 
     headers = {
         'Accept': 'application/json',
@@ -146,6 +197,7 @@ def get_all_fdm_object_groups(fdm, limit=100, offset=0):
     response = requests.request("GET", url, headers=headers, verify=False).json()
 
     return response
+
 
 def delete_all_fdm_objects(fdm):
     """
@@ -164,6 +216,9 @@ def delete_all_fdm_objects(fdm):
         network_object_id = network_object['id']
         url = "https://" + fdm.ip + ":" + fdm.port + "/api/fdm/v6/object/networks/" + network_object_id
         response = requests.request("DELETE", url, headers=headers, verify=False)
+
+    return response
+
 
 def delete_all_fdm_object_groups(fdm):
     """
@@ -184,3 +239,4 @@ def delete_all_fdm_object_groups(fdm):
         url = "https://" + fdm.ip + ":" + fdm.port + "/api/fdm/v6/object/networkgroups/"+network_group_id
         response = requests.request("DELETE", url, headers=headers, verify=False)
 
+    return response
