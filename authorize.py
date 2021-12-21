@@ -3,10 +3,12 @@
 # Version 1.0
 # By Bo V Mortensen
 # 20th December 2021
+import sys
 
 import requests
 import datetime
 from requests.auth import HTTPBasicAuth
+
 
 def fdm_get_token(fdm):
     """
@@ -23,14 +25,27 @@ def fdm_get_token(fdm):
         'User-agent': 'REST API Agent'
     }
 
-    response = requests.request("POST", url, headers=headers, data=payload, verify=False).json()
-    now = datetime.datetime.now()
+    try:
+        response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+        response.raise_for_status()
+    except requests.exceptions.HTTPError:
+        if response.status_code == 400:
+            print("Got HTTP error 400, bad request or login credentials")
+        sys.exit()
+    except requests.exceptions.ConnectionError as errc:
+        print("An error connecting to API occurered: " + repr(errc))
+        sys.exit()
+    except requests.exceptions:
+        print("Something else happened")
+        sys.exit()
 
-    fdm.access_token = response['access_token']
-    fdm.refresh_token = response['refresh_token']
-    fdm.expires = now + datetime.timedelta(seconds=response['expires_in'])
-    fdm.refresh_expires = now + datetime.timedelta(seconds=response['refresh_expires_in'])
-    return response
+    now = datetime.datetime.now()
+    json_response = response.json()
+    fdm.access_token = json_response['access_token']
+    fdm.refresh_token = json_response['refresh_token']
+    fdm.expires = now + datetime.timedelta(seconds=json_response['expires_in'])
+    fdm.refresh_expires = now + datetime.timedelta(seconds=json_response['refresh_expires_in'])
+    return json_response
 
 
 def asa_get_token(asa):
@@ -49,7 +64,18 @@ def asa_get_token(asa):
         'User-agent': 'REST API Agent'
     }
 
-    response = requests.request("POST", url, auth=basicauth, headers=headers, data=payload, verify=False)
+    try:
+        response = requests.request("POST", url, auth=basicauth, headers=headers, data=payload, verify=False)
+        response.raise_for_status()
+    except requests.exceptions.HTTPError:
+        if response.status_code == 400:
+            print("Got HTTP error 400, bad request or login credentials")
+        sys.exit()
+    except requests.exceptions.ConnectionError as errc:
+        print("An error connecting to API occurered: " + repr(errc))
+        sys.exit()
+    except requests.exceptions:
+        print("Something else happened")
+        sys.exit()
 
     return response.headers['X-Auth-Token']
-

@@ -6,15 +6,6 @@
 # Functions towards Cisco ASA
 
 import requests
-from Services import fdm_networkobject_functions
-
-
-def parse_asa_network_groups(fdm, netgroups):
-    """
-    This function takes all network-group objects, then pushes them one after one to the given FDM object.
-    """
-    for group in netgroups:
-        fdm_networkobject_functions.create_fdm_network_group(fdm, group)
 
 
 def get_number_of_asa_network_objects(asa):
@@ -24,10 +15,6 @@ def get_number_of_asa_network_objects(asa):
     :return: Integer which describes how many objects is found on ASA.
     """
     url = "https://" + asa.ip + ":" + asa.port + "/api/objects/networkobjects?limit=1"
-
-    objects = {}
-
-    payload = {}
 
     headers = {
         'Content-Type': 'application/json',
@@ -107,9 +94,6 @@ def get_asa_network_objects(asa, limit=100, offset=0):
     """
     url = "https://" + asa.ip + ":" + asa.port + "/api/objects/networkobjects?limit="+str(limit)+"&offset="+str(offset)
 
-    payload = {
-    }
-
     headers = {
         'Content-Type': 'application/json',
         'User-agent': 'REST API Agent',
@@ -132,10 +116,8 @@ def get_asa_network_groups(asa, limit=100, offset=0):
     :param offset: Which index to start from.
     :return: Returns <limit> ASA object-groups, starting from <limit>
     """
-    url = "https://" + asa.ip + ":" + asa.port + "/api/objects/networkobjectgroups?limit="+str(limit)+"&offset="+str(offset)
-
-    payload = {
-    }
+    url = "https://" + asa.ip + ":" + asa.port + "/api/objects/networkobjectgroups?limit="\
+          + str(limit)+"&offset=" + str(offset)
 
     headers = {
         'Content-Type': 'application/json',

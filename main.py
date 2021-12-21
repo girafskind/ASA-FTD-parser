@@ -5,7 +5,7 @@
 # 20th December 2021
 
 from Services import fdm_networkobject_functions, asa_networkobject_functions, fdm_deploy_functions
-from Classes import Devices
+from Classes import Devices, Migration
 import authorize
 import config
 
@@ -17,26 +17,48 @@ def main():
     """
     fdm1 = initialize_fdm()
     asa1 = initialize_asa()
-    parse_objects(asa1, fdm1)
+
+    migration1 = Migration.MigrationStatus()
+    parse_objects(asa1, fdm1, migration1)
 
 
-def parse_objects(asa, fdm):
+def parse_objects(asa, fdm, mig):
     """
     Function which first get all objects from ASA as a list, then creates them on the FDM.
     Then gets all object-groups from ASA as a list, then creates them on the FDM.
     An object-group cannot contain a object which does not exist.
     :param asa: Soruce ASA
     :param fdm: Destination FDM
+    :param mig: Migration status
     :return: Nothing
     """
+
+    mig.network_objects_in_asa = asa_networkobject_functions.get_number_of_asa_network_objects(asa)
+    mig.group_objects_in_asa = asa_networkobject_functions.get_number_of_asa_network_groups(asa)
+
+    print("Found " + str(mig.network_objects_in_asa) + " network objects on the ASA")
+    print("Found " + str(mig.group_objects_in_asa) + " network objects on the ASA")
+
+    print("Gathering network objets from ASA: " + asa.ip)
     asa_objects = asa_networkobject_functions.get_all_asa_network_objects(asa)
 
     for asa_object in asa_objects:
-        fdm_networkobject_functions.create_fdm_network_object(fdm, asa_object)
+        fdm_networkobject_functions.create_fdm_network_object(fdm, asa_object, mig)
+        print("Migrated " + str(mig.migrated_network_objects) + " network objects.")
 
-    asanetgroups = asa_networkobject_functions.get_all_asa_network_groups(asa)
-    for group in asanetgroups:
-        fdm_networkobject_functions.create_fdm_network_group(fdm, group)
+    print("Gathering network objet-groups from ASA: " + asa.ip)
+    asa_net_groups = asa_networkobject_functions.get_all_asa_network_groups(asa)
+    for group in asa_net_groups:
+        fdm_networkobject_functions.create_fdm_network_group(fdm, group, mig)
+        print("Migrated " + str(mig.migrated_group_objects) + " object groups.")
+
+    print("####### Status #######")
+    print("Migrated " + str(mig.migrated_network_objects) + " network objects")
+    print("Migrated " + str(mig.migrated_group_objects) + " network objects")
+    print("Skipped " + str(mig.skipped_caused_by_duplicates) + " objects")
+    print("### Skipped objects ###")
+    for skipped_object in mig.skipped_objects:
+        print(skipped_object)
 
 
 def initialize_fdm():
@@ -72,7 +94,7 @@ def deploy_config_to_fdm(fdm):
     """
     Function which initiates deployment of the configuration on given FDM device.
     """
-    fdm_deploy_functions.deployfdm(fdm)
+    print("Deployment ID: " + fdm_deploy_functions.deployfdm(fdm)['id'])
 
 
 def delete_all_objects(fdm):
@@ -87,5 +109,3 @@ def delete_all_objects(fdm):
 
 if __name__ == '__main__':
     main()
-
-
