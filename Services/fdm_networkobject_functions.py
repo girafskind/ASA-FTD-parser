@@ -8,7 +8,8 @@
 import sys
 import requests
 import json
-
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 def create_fdm_network_object(fdm, asanetobj, migration):
     """
@@ -19,7 +20,7 @@ def create_fdm_network_object(fdm, asanetobj, migration):
     :param migration: Migration status class
     :return: Response from FDM device
     """
-    url = "https://"+fdm.ip+":"+fdm.port+"/api/fdm/v6/object/networks"
+    url = fdm.url() + "/api/fdm/v6/object/networks"
 
     object_type = ""
 
@@ -52,8 +53,8 @@ def create_fdm_network_object(fdm, asanetobj, migration):
             print("Got HTTP error 400, bad request or login credentials")
         if response.status_code == 422:
             print("Got HTTP error 422, duplicate element: " + payload)
-            migration.skipped_objects.append(payload)
-            migration.add_duplicate()
+            reason = json.loads(response.content)['error']['messages'][0]['description']
+            migration.add_duplicate_network(payload, reason)
             return
         sys.exit()
     except requests.exceptions.ConnectionError as errc:
@@ -76,7 +77,7 @@ def create_fdm_network_group(fdm, objectgroup, migration):
     :param migration: Migration status class
     :return: Response from FDM device
     """
-    url = "https://"+fdm.ip+":"+fdm.port+"/api/fdm/v6/object/networkgroups"
+    url = fdm.url() + "/api/fdm/v6/object/networkgroups"
 
     prepayload = {
         'name': objectgroup.get('objectId'),
@@ -105,9 +106,8 @@ def create_fdm_network_group(fdm, objectgroup, migration):
         if response.status_code == 400:
             print("Got HTTP error 400, bad request or login credentials")
         if response.status_code == 422:
-            print("Got HTTP error 422, duplicate element: " + payload)
-            migration.skipped_objects.append(payload)
-            migration.add_duplicate()
+            reason = json.loads(response.content)['error']['messages'][0]['description']
+            migration.add_duplicate_network(payload,reason)
             return
         sys.exit()
     except requests.exceptions.ConnectionError as errc:
@@ -128,7 +128,7 @@ def get_fdm_objects(fdm):
     :param fdm:
     :return: List containing all network objects
     """
-    url = "https://" + fdm.ip + ":" + fdm.port + "/api/fdm/v6/object/networks"
+    url = fdm.url() + "/api/fdm/v6/object/networks"
 
     headers = {
         'Accept': 'application/json',
@@ -146,7 +146,7 @@ def get_fdm_object_groups(fdm):
     :param fdm:
     :return: List containing all network object-groups
     """
-    url = "https://" + fdm.ip + ":" + fdm.port + "/api/fdm/v6/object/networkgroups"
+    url = fdm.url() + "/api/fdm/v6/object/networkgroups"
 
     headers = {
         'Accept': 'application/json',
@@ -166,7 +166,7 @@ def get_all_fdm_objects(fdm, limit=100, offset=0):
     :param offset: Integer, starting point of objects
     :return: List containing all network objecs
     """
-    url = "https://" + fdm.ip + ":" + fdm.port + "/api/fdm/v6/object/networks?offset="+str(offset)+"&limit="+str(limit)
+    url = fdm.url() + "/api/fdm/v6/object/networks?offset="+str(offset)+"&limit="+str(limit)
 
     headers = {
         'Accept': 'application/json',
@@ -186,7 +186,7 @@ def get_all_fdm_object_groups(fdm, limit=100, offset=0):
     :param offset: Integer, starting point of objects
     :return: List containing all network object-groups
     """
-    url = "https://" + fdm.ip + ":" + fdm.port + "/api/fdm/v6/object/networkgroups?offset="\
+    url = fdm.url() + "/api/fdm/v6/object/networkgroups?offset="\
           + str(offset) + "&limit=" + str(limit)
 
     headers = {
@@ -214,7 +214,7 @@ def delete_all_fdm_objects(fdm):
 
     for network_object in all_objects['items']:
         network_object_id = network_object['id']
-        url = "https://" + fdm.ip + ":" + fdm.port + "/api/fdm/v6/object/networks/" + network_object_id
+        url = fdm.url() + "/api/fdm/v6/object/networks/" + network_object_id
         response = requests.request("DELETE", url, headers=headers, verify=False)
 
     return response
@@ -236,7 +236,7 @@ def delete_all_fdm_object_groups(fdm):
 
     for object_group in all_object_groups['items']:
         network_group_id = object_group['id']
-        url = "https://" + fdm.ip + ":" + fdm.port + "/api/fdm/v6/object/networkgroups/"+network_group_id
+        url = fdm.url() + "/api/fdm/v6/object/networkgroups/"+network_group_id
         response = requests.request("DELETE", url, headers=headers, verify=False)
 
     return response
