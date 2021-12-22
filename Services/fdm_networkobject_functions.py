@@ -4,12 +4,13 @@
 # Version 1.0
 # 20th December 2021
 # Functions towards Cisco FDM
-
 import sys
+
 import requests
 import json
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
 
 def create_fdm_network_object(fdm, asanetobj, migration):
     """
@@ -86,8 +87,9 @@ def create_fdm_network_group(fdm, objectgroup, migration):
     }
 
     for groupmember in objectgroup.get('members'):
+        converted_group_member = check_object_group_for_ip_values(groupmember, fdm, migration)
         prepayload['objects'].append(
-            {'name': groupmember.get('objectId'),
+            {'name': converted_group_member.get('objectId'),
              'type': 'networkobject'
              }
         )
@@ -240,3 +242,52 @@ def delete_all_fdm_object_groups(fdm):
         response = requests.request("DELETE", url, headers=headers, verify=False)
 
     return response
+
+
+def check_object_group_for_ip_values(group_object, fdm, migration):
+    """
+    Check if network group-object contains IP host addresses or subnets, creates them as objects if they do.
+    :param group_object: ASA network object-group
+    :return:
+    """
+
+    if group_object['kind'] == "IPv4Network":
+        asanetobj = {
+            'name': 'Obj-' + group_object['value'].replace('/','-'),
+            'host': {
+                'kind': group_object['kind'],
+                'value': group_object['value']
+            }
+        }
+
+        create_fdm_network_object(fdm, asanetobj, migration)
+        return asanetobj
+
+    if group_object['kind'] == "IPv4Address":
+        asanetobj = {
+            'name': 'Obj-' + group_object['value'],
+            'host': {
+                'kind': group_object['kind'],
+                'value': group_object['value']
+            }
+        }
+
+        create_fdm_network_object(fdm, asanetobj, migration)
+        return asanetobj
+
+    return group_object
+
+
+def convert_ip_objects(ipaddresses):
+    """
+    Convert IP host or subnet to object
+    :param ipaddress: List of IP-addresses x.x.x.x/x
+    :return: A similar object as from ASA API
+    """
+
+    for ipaddress in ipaddresses:
+        asanetobj = {
+            'host': {
+                'kind': ""
+            }
+        }

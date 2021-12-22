@@ -23,19 +23,15 @@ def main():
     migration1 = Migration.MigrationStatus()
     parse_objects(asa1, fdm1, migration1)
 
-"""
-### TEST SCRIPT START ###
-
-
-    asa_service_objects = asa_networkservice_functions.get_all_service_objects(asa1)
-    print("Creating service objects on FTD:" + fdm1.ip)
-    print("Creating: " + str(asa_service_objects[19]))
-    fdm_serviceobject_functions.create_fdm_port_object(fdm1, asa_service_objects[19], migration1)
-    print("Created: " + str(asa_service_objects[19]))
-    
 
 ### TEST SCRIPT START ###
 """
+    asa_object = asa_networkobject_functions.get_all_asa_network_groups(asa1)
+    print(asa_object)
+    print(fdm_networkobject_functions.check_object_group_for_IP_values(asa_object))
+"""
+### TEST SCRIPT START ###
+
 
 def parse_objects(asa, fdm, mig):
     """
@@ -61,14 +57,16 @@ def parse_objects(asa, fdm, mig):
 
     print("Gathering network objets from ASA: " + asa.ip)
     asa_network_objects = asa_networkobject_functions.get_all_asa_network_objects(asa)
+    print("Gathering network object-groups from ASA: " + asa.ip)
+    asa_net_groups = asa_networkobject_functions.get_all_asa_network_groups(asa)
+    #print("Check network-groups for non object members.")
+    #asa_network_objects.append(fdm_networkobject_functions.check_object_group_for_IP_values(asa_net_groups))
     print("Creating network objects on FTD:" + fdm.ip)
     for asa_object in asa_network_objects:
         fdm_networkobject_functions.create_fdm_network_object(fdm, asa_object, mig)
         print("Migrated " + str(mig.migrated_network_objects) + " network objects.")
     print("Network objects created.")
 
-    print("Gathering network objet-groups from ASA: " + asa.ip)
-    asa_net_groups = asa_networkobject_functions.get_all_asa_network_groups(asa)
     print("Creating network object-groups on FTD:" + fdm.ip)
     for group in asa_net_groups:
         fdm_networkobject_functions.create_fdm_network_group(fdm, group, mig)
@@ -80,7 +78,7 @@ def parse_objects(asa, fdm, mig):
     print("Creating service objects on FTD:" + fdm.ip)
     for service_object in asa_service_objects:
         fdm_serviceobject_functions.create_fdm_port_object(fdm, service_object, mig)
-        print("Migrated " + str(mig.migrated_network_object_groups) + " services.")
+        print("Migrated " + str(mig.migrated_service_objects) + " services.")
     print("Service objects created.")
 
     print("####### Status #######")
