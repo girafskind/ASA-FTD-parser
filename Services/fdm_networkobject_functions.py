@@ -8,7 +8,8 @@
 import sys
 import requests
 import json
-
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 def create_fdm_network_object(fdm, asanetobj, migration):
     """
@@ -52,8 +53,8 @@ def create_fdm_network_object(fdm, asanetobj, migration):
             print("Got HTTP error 400, bad request or login credentials")
         if response.status_code == 422:
             print("Got HTTP error 422, duplicate element: " + payload)
-            migration.skipped_objects.append(payload)
-            migration.add_duplicate()
+            reason = json.loads(response.content)['error']['messages'][0]['description']
+            migration.add_duplicate_network(payload, reason)
             return
         sys.exit()
     except requests.exceptions.ConnectionError as errc:
@@ -105,9 +106,8 @@ def create_fdm_network_group(fdm, objectgroup, migration):
         if response.status_code == 400:
             print("Got HTTP error 400, bad request or login credentials")
         if response.status_code == 422:
-            print("Got HTTP error 422, duplicate element: " + payload)
-            migration.skipped_objects.append(payload)
-            migration.add_duplicate()
+            reason = json.loads(response.content)['error']['messages'][0]['description']
+            migration.add_duplicate_network(payload,reason)
             return
         sys.exit()
     except requests.exceptions.ConnectionError as errc:

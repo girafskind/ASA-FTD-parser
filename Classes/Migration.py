@@ -17,7 +17,8 @@ class MigrationStatus:
     migrated_service_objects = 0
     migrated_service_object_groups = 0
 
-    skipped_caused_by_duplicates = 0
+    skipped_nets_caused_by_duplicates = 0
+    skipped_services_caused_by_duplicates = 0
 
     skipped_objects = []
 
@@ -33,5 +34,13 @@ class MigrationStatus:
     def add_migrated_group(self):
         self.migrated_network_object_groups = self.migrated_network_object_groups + 1
 
-    def add_duplicate(self):
-        self.skipped_caused_by_duplicates = self.skipped_caused_by_duplicates + 1
+    def add_duplicate_network(self, duplicate_network, reason):
+        self.skipped_nets_caused_by_duplicates = self.skipped_nets_caused_by_duplicates + 1
+        self.skipped_objects.append({'skipped item': duplicate_network, 'type': 'service object', 'reason': reason})
+
+    def add_duplicate_service(self, duplicate_service, reason):
+        self.skipped_services_caused_by_duplicates = self.skipped_services_caused_by_duplicates + 1
+        self.skipped_objects.append({'skipped item': duplicate_service, 'type': 'service object', 'reason': reason})
+
+    def skipped_objects_in_migration(self):
+        return self.skipped_nets_caused_by_duplicates + self.skipped_services_caused_by_duplicates

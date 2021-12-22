@@ -6,8 +6,11 @@
 # Functions towards Cisco FDM
 
 import json
-
+import sys
 import requests.exceptions
+from Services import named_ports_translator
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 def parse_asa_portvalue(asaserviceobj):
@@ -16,37 +19,46 @@ def parse_asa_portvalue(asaserviceobj):
     :param asaserviceobj:
     :return: Dictionary of port and protocol
     """
+    service_dict = {}
+
     if asaserviceobj['kind'] == "object#TcpUdpServiceObj":
         protocol, port = asaserviceobj['value'].split("/")
 
+        if not port.isnumeric():
+            port = named_ports_translator.no_port_names(port)
+
         service_dict = {
-            'protocol' : protocol,
-            'port': port,
-            'url-tail': protocol + "ports"
+            "name": asaserviceobj['name'],
+            "type": protocol + "portobject",
+            "port": port,
+            "url-tail": protocol + "ports"
+        }
+    elif asaserviceobj['kind'] == "object#NetworkProtocolObj":
+        service_dict = {
+            "name": asaserviceobj['name'],
+            "type": "protocolobject",
+            "protocol": asaserviceobj['value'].upper(),
+            "url-tail": "protocols"
         }
 
-        return service_dict
+    return service_dict
 
 
 def create_fdm_port_object(fdm, asaserviceobj, migration):
     """
     This function create an FDM port object.
-    :param fdm:
-    :param asaserviceobj:
-    :param migration:
+    :param fdm: Target FDM
+    :param asaserviceobj: Service object in JSON from ASA
+    :param migration: Migration status object
     :return:
     """
 
-    porttype = parse_asa_portvalue(asaserviceobj)
+    port_type_dict = parse_asa_portvalue(asaserviceobj)
 
-    url = fdm.url() + "/api/fdm/v6/object/" + porttype['url-tail']
+    url = fdm.url() + "/api/fdm/v6/object/" + port_type_dict['url-tail']
 
-    payload = json.dumps({
-        "name": asaserviceobj['name'],
-        "port": porttype['port'],
-        "type": porttype['protocol'] + "portobject"
-    })
-    print(payload)
+    port_type_dict.pop('url-tail')
+    payload = json.dumps(port_type_dict)
 
     headers = {
         'Accept': 'application/json',
@@ -57,4 +69,22 @@ def create_fdm_port_object(fdm, asaserviceobj, migration):
         response = requests.request("POST", url, headers=headers, data=payload, verify=False)
         response.raise_for_status()
     except requests.exceptions.HTTPError as err:
-        print(err)
+        if response.status_code == 400:
+            print("Got HTTP error 400, bad request or login credentials")
+        if response.status_code == 404:
+            print("Got HTTP error 404, not found")
+        if response.status_code == 422:
+            reason = json.loads(response.content)['error']['messages'][0]['description']
+            migration.add_duplicate_service(payload,reason)
+            return
+        else:
+            print("HTTP error:" + str(err))
+            sys.exit()
+    except requests.exceptions.ConnectionError as errc:
+        print("An error connecting to API occurered: " + repr(errc))
+        sys.exit()
+    except requests.exceptions:
+        print("Something else happened")
+        sys.exit()
+
+    return response.json()

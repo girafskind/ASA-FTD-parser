@@ -9,6 +9,7 @@ from Services import fdm_networkobject_functions, fdm_deploy_functions, fdm_serv
 from Classes import Devices, Migration
 import authorize
 import config
+import json
 
 
 def main():
@@ -20,20 +21,21 @@ def main():
     asa1 = initialize_asa()
 
     migration1 = Migration.MigrationStatus()
-#    parse_objects(asa1, fdm1, migration1)
+    parse_objects(asa1, fdm1, migration1)
 
-    """
-    ### START TEST ###
-    """
-    print("Gathering service objects from ASA: " + asa1.ip)
+"""
+### TEST SCRIPT START ###
+
+
     asa_service_objects = asa_networkservice_functions.get_all_service_objects(asa1)
+    print("Creating service objects on FTD:" + fdm1.ip)
+    print("Creating: " + str(asa_service_objects[19]))
+    fdm_serviceobject_functions.create_fdm_port_object(fdm1, asa_service_objects[19], migration1)
+    print("Created: " + str(asa_service_objects[19]))
+    
 
-    fdm_serviceobject_functions.create_fdm_port_object(fdm1, asa_service_objects[1],migration1)
-
-    """
-    ### END TEST ###
-    """
-
+### TEST SCRIPT START ###
+"""
 
 def parse_objects(asa, fdm, mig):
     """
@@ -48,45 +50,51 @@ def parse_objects(asa, fdm, mig):
 
     mig.network_objects_in_asa = asa_networkobject_functions.get_number_of_asa_network_objects(asa)
     mig.network_object_groups_in_asa = asa_networkobject_functions.get_number_of_asa_network_groups(asa)
+    mig.service_objects_in_asa = asa_networkservice_functions.get_number_of_asa_service_objects(asa)
+    mig.service_object_groups_in_asa = asa_networkservice_functions.get_number_of_asa_service_groups(asa)
+
 
     print("Found " + str(mig.network_objects_in_asa) + " network objects on the ASA")
     print("Found " + str(mig.network_object_groups_in_asa) + " network objects on the ASA")
+    print("Found " + str(mig.service_objects_in_asa) + " service objects on the ASA")
+    print("Found " + str(mig.service_object_groups_in_asa) + " service object-groups on the ASA")
 
     print("Gathering network objets from ASA: " + asa.ip)
     asa_network_objects = asa_networkobject_functions.get_all_asa_network_objects(asa)
+    print("Creating network objects on FTD:" + fdm.ip)
     for asa_object in asa_network_objects:
         fdm_networkobject_functions.create_fdm_network_object(fdm, asa_object, mig)
         print("Migrated " + str(mig.migrated_network_objects) + " network objects.")
+    print("Network objects created.")
 
     print("Gathering network objet-groups from ASA: " + asa.ip)
     asa_net_groups = asa_networkobject_functions.get_all_asa_network_groups(asa)
+    print("Creating network object-groups on FTD:" + fdm.ip)
     for group in asa_net_groups:
         fdm_networkobject_functions.create_fdm_network_group(fdm, group, mig)
         print("Migrated " + str(mig.migrated_network_object_groups) + " object groups.")
+    print("Network object-groups created.")
 
     print("Gathering service objects from ASA: " + asa.ip)
     asa_service_objects = asa_networkservice_functions.get_all_service_objects(asa)
+    print("Creating service objects on FTD:" + fdm.ip)
     for service_object in asa_service_objects:
-        pass
-
-    print("Gathering serivce object groups from ASA: " + asa.ip)
-    asa_service_groups = asa_networkservice_functions.get_all_service_objects(asa)
-    for service_group in asa_service_groups:
-        pass
-
+        fdm_serviceobject_functions.create_fdm_port_object(fdm, service_object, mig)
+        print("Migrated " + str(mig.migrated_network_object_groups) + " services.")
+    print("Service objects created.")
 
     print("####### Status #######")
     print("Migrated " + str(mig.migrated_network_objects) + " network objects")
     print("Migrated " + str(mig.migrated_network_object_groups) + " network objects")
-    print("Skipped " + str(mig.skipped_caused_by_duplicates) + " objects")
+    print("Migrated " + str(mig.migrated_service_objects) + " service objects")
+    print("Skipped " + str(mig.skipped_objects_in_migration()) + " objects")
     print("### Skipped objects ###")
-    for skipped_object in mig.skipped_objects:
-        print(skipped_object)
+    print(json.dumps(mig.skipped_objects, indent=2, default=str).replace('\\', ''))
 
 
 def initialize_fdm():
     """
-    Initialize a FDM object from info entered in config.py
+    Initialize an FDM object from info entered in config.py
     :return: A FDM object, containing an access- and refresh-token.
     """
     newfdm = Devices.FTDClass()
