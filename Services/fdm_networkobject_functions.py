@@ -9,6 +9,7 @@ import sys
 import requests
 import json
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
@@ -109,7 +110,7 @@ def create_fdm_network_group(fdm, objectgroup, migration):
             print("Got HTTP error 400, bad request or login credentials")
         if response.status_code == 422:
             reason = json.loads(response.content)['error']['messages'][0]['description']
-            migration.add_duplicate_network(payload,reason)
+            migration.add_duplicate_network(payload, reason)
             return
         sys.exit()
     except requests.exceptions.ConnectionError as errc:
@@ -168,7 +169,7 @@ def get_all_fdm_objects(fdm, limit=100, offset=0):
     :param offset: Integer, starting point of objects
     :return: List containing all network objecs
     """
-    url = fdm.url() + "/api/fdm/v6/object/networks?offset="+str(offset)+"&limit="+str(limit)
+    url = fdm.url() + "/api/fdm/v6/object/networks?offset=" + str(offset) + "&limit=" + str(limit)
 
     headers = {
         'Accept': 'application/json',
@@ -188,8 +189,7 @@ def get_all_fdm_object_groups(fdm, limit=100, offset=0):
     :param offset: Integer, starting point of objects
     :return: List containing all network object-groups
     """
-    url = fdm.url() + "/api/fdm/v6/object/networkgroups?offset="\
-          + str(offset) + "&limit=" + str(limit)
+    url = fdm.url() + "/api/fdm/v6/object/networkgroups?offset=" + str(offset) + "&limit=" + str(limit)
 
     headers = {
         'Accept': 'application/json',
@@ -238,7 +238,7 @@ def delete_all_fdm_object_groups(fdm):
 
     for object_group in all_object_groups['items']:
         network_group_id = object_group['id']
-        url = fdm.url() + "/api/fdm/v6/object/networkgroups/"+network_group_id
+        url = fdm.url() + "/api/fdm/v6/object/networkgroups/" + network_group_id
         response = requests.request("DELETE", url, headers=headers, verify=False)
 
     return response
@@ -248,12 +248,15 @@ def check_object_group_for_ip_values(group_object, fdm, migration):
     """
     Check if network group-object contains IP host addresses or subnets, creates them as objects if they do.
     :param group_object: ASA network object-group
+    :param fdm: The FDM device to create the missing object
+    :param migration: The migration status object
     :return:
     """
 
     if group_object['kind'] == "IPv4Network":
         asanetobj = {
-            'name': 'Obj-' + group_object['value'].replace('/','-'),
+            'name': 'Obj-' + group_object['value'].replace('/', '-'),
+            'objectId': 'Obj-' + group_object['value'].replace('/', '-'),
             'host': {
                 'kind': group_object['kind'],
                 'value': group_object['value']
@@ -266,6 +269,7 @@ def check_object_group_for_ip_values(group_object, fdm, migration):
     if group_object['kind'] == "IPv4Address":
         asanetobj = {
             'name': 'Obj-' + group_object['value'],
+            'objectId': 'Obj-' + group_object['value'].replace('/', '-'),
             'host': {
                 'kind': group_object['kind'],
                 'value': group_object['value']
@@ -276,18 +280,3 @@ def check_object_group_for_ip_values(group_object, fdm, migration):
         return asanetobj
 
     return group_object
-
-
-def convert_ip_objects(ipaddresses):
-    """
-    Convert IP host or subnet to object
-    :param ipaddress: List of IP-addresses x.x.x.x/x
-    :return: A similar object as from ASA API
-    """
-
-    for ipaddress in ipaddresses:
-        asanetobj = {
-            'host': {
-                'kind': ""
-            }
-        }

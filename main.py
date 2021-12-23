@@ -17,20 +17,12 @@ def main():
     Main function which initialized one ASA and one FDM object, from the credentials entered in the config.py file.
     Then parse all objects on the ASA to the FDM.
     """
+
     fdm1 = initialize_fdm()
     asa1 = initialize_asa()
 
     migration1 = Migration.MigrationStatus()
     parse_objects(asa1, fdm1, migration1)
-
-
-### TEST SCRIPT START ###
-"""
-    asa_object = asa_networkobject_functions.get_all_asa_network_groups(asa1)
-    print(asa_object)
-    print(fdm_networkobject_functions.check_object_group_for_IP_values(asa_object))
-"""
-### TEST SCRIPT START ###
 
 
 def parse_objects(asa, fdm, mig):
@@ -49,7 +41,6 @@ def parse_objects(asa, fdm, mig):
     mig.service_objects_in_asa = asa_networkservice_functions.get_number_of_asa_service_objects(asa)
     mig.service_object_groups_in_asa = asa_networkservice_functions.get_number_of_asa_service_groups(asa)
 
-
     print("Found " + str(mig.network_objects_in_asa) + " network objects on the ASA")
     print("Found " + str(mig.network_object_groups_in_asa) + " network objects on the ASA")
     print("Found " + str(mig.service_objects_in_asa) + " service objects on the ASA")
@@ -59,8 +50,6 @@ def parse_objects(asa, fdm, mig):
     asa_network_objects = asa_networkobject_functions.get_all_asa_network_objects(asa)
     print("Gathering network object-groups from ASA: " + asa.ip)
     asa_net_groups = asa_networkobject_functions.get_all_asa_network_groups(asa)
-    #print("Check network-groups for non object members.")
-    #asa_network_objects.append(fdm_networkobject_functions.check_object_group_for_IP_values(asa_net_groups))
     print("Creating network objects on FTD:" + fdm.ip)
     for asa_object in asa_network_objects:
         fdm_networkobject_functions.create_fdm_network_object(fdm, asa_object, mig)

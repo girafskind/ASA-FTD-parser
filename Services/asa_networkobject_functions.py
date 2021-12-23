@@ -7,6 +7,7 @@
 
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
@@ -117,7 +118,7 @@ def get_asa_network_objects(asa, limit=100, offset=0):
     :param offset: Which index to start from.
     :return: Returns <limit> ASA objects, starting from <limit>
     """
-    url = asa.url() + "/api/objects/networkobjects?limit="+str(limit)+"&offset="+str(offset)
+    url = asa.url() + "/api/objects/networkobjects?limit=" + str(limit) + "&offset=" + str(offset)
 
     headers = {
         'Content-Type': 'application/json',
@@ -141,8 +142,7 @@ def get_asa_network_groups(asa, limit=100, offset=0):
     :param offset: Which index to start from.
     :return: Returns <limit> ASA object-groups, starting from <limit>
     """
-    url = asa.url() + "/api/objects/networkobjectgroups?limit="\
-          + str(limit)+"&offset=" + str(offset)
+    url = asa.url() + "/api/objects/networkobjectgroups?limit=" + str(limit) + "&offset=" + str(offset)
 
     headers = {
         'Content-Type': 'application/json',
