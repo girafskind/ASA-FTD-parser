@@ -75,7 +75,7 @@ def create_fdm_port_object(fdm, asaserviceobj, migration):
             print("Got HTTP error 404, not found")
         if response.status_code == 422:
             reason = json.loads(response.content)['error']['messages'][0]['description']
-            migration.add_duplicate_service(payload,reason)
+            migration.add_duplicate_service(payload, reason)
             return
         else:
             print("HTTP error:" + str(err))
@@ -87,4 +87,5 @@ def create_fdm_port_object(fdm, asaserviceobj, migration):
         print("Something else happened")
         sys.exit()
 
+    migration.add_migrated_service()
     return response.json()

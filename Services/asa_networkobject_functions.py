@@ -7,6 +7,7 @@
 
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
@@ -84,6 +85,29 @@ def get_all_asa_network_groups(asa):
     return asaobjects
 
 
+def check_asa_network_object(name, asa):
+    """
+    This function searches for an existing network object
+    :param name: Name of the network object.
+    :param asa: The ASA which is searched.
+    :return: Returns True if the object exsists, else False
+    """
+    url = asa.url() + "/api/objects/networkobjects/" + name
+
+    headers = {
+        'Content-Type': 'application/json',
+        'User-agent': 'REST API Agent',
+        'X-Auth-Token': asa.token
+    }
+
+    response = requests.request("GET", url, headers=headers, verify=False)
+
+    if response.status_code != 200:
+        return False
+    else:
+        return True
+
+
 def get_asa_network_objects(asa, limit=100, offset=0):
     """
     This function returns all network objects, give an ASA object as arguement.
@@ -94,7 +118,7 @@ def get_asa_network_objects(asa, limit=100, offset=0):
     :param offset: Which index to start from.
     :return: Returns <limit> ASA objects, starting from <limit>
     """
-    url = asa.url() + "/api/objects/networkobjects?limit="+str(limit)+"&offset="+str(offset)
+    url = asa.url() + "/api/objects/networkobjects?limit=" + str(limit) + "&offset=" + str(offset)
 
     headers = {
         'Content-Type': 'application/json',
@@ -118,8 +142,7 @@ def get_asa_network_groups(asa, limit=100, offset=0):
     :param offset: Which index to start from.
     :return: Returns <limit> ASA object-groups, starting from <limit>
     """
-    url = asa.url() + "/api/objects/networkobjectgroups?limit="\
-          + str(limit)+"&offset=" + str(offset)
+    url = asa.url() + "/api/objects/networkobjectgroups?limit=" + str(limit) + "&offset=" + str(offset)
 
     headers = {
         'Content-Type': 'application/json',

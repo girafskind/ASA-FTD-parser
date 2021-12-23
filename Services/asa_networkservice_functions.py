@@ -65,6 +65,7 @@ def get_all_service_objects(asa):
 
     return response
 
+
 def get_all_service_groups(asa):
     """
     This function retrieves all service groups from ASA
