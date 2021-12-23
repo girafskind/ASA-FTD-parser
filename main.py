@@ -21,9 +21,18 @@ def main():
     fdm1 = initialize_fdm()
     asa1 = initialize_asa()
 
-    migration1 = Migration.MigrationStatus()
-    parse_objects(asa1, fdm1, migration1)
+    #migration1 = Migration.MigrationStatus()
+    #parse_objects(asa1, fdm1, migration1)
 
+    """
+    TEST SCRIPT START
+    """
+    asa_service_groups = asa_networkservice_functions.get_all_service_groups(asa1)
+    for service_group in asa_service_groups:
+        fdm_serviceobject_functions.create_fdm_port_group(fdm1, service_group)
+    """
+    TEST SCRIPT END
+    """
 
 def parse_objects(asa, fdm, mig):
     """
@@ -69,6 +78,11 @@ def parse_objects(asa, fdm, mig):
         fdm_serviceobject_functions.create_fdm_port_object(fdm, service_object, mig)
         print("Migrated " + str(mig.migrated_service_objects) + " services.")
     print("Service objects created.")
+
+    print("Gathering service groups from ASA: " +asa.ip)
+    asa_service_groups = asa_networkservice_functions.get_number_of_asa_service_groups(asa)
+    for service_group in asa_service_groups:
+        fdm_serviceobject_functions.create_fdm_service_object(fdm, service_group, mig)
 
     print("####### Status #######")
     print("Migrated " + str(mig.migrated_network_objects) + " network objects")

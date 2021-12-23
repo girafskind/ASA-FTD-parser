@@ -40,6 +40,7 @@ def parse_asa_portvalue(asaserviceobj):
             "protocol": asaserviceobj['value'].upper(),
             "url-tail": "protocols"
         }
+    elif asaserviceobj['kind']
 
     return service_dict
 
@@ -89,3 +90,30 @@ def create_fdm_port_object(fdm, asaserviceobj, migration):
 
     migration.add_migrated_service()
     return response.json()
+
+
+def create_fdm_port_group(fdm, asa_service_group):
+    """
+    This function creates a service group
+    :param fdm: The target FDM
+    :param asaservicegroup: The ASA service group
+    :param migration: Migration status
+    :return:
+    """
+
+    payload = {
+        'name' : asa_service_group['name']
+    }
+
+    for service in asa_service_group['members']:
+        print(service)
+
+    url = fdm.url() + "/api/fdm/v6/object/portgroups"
+
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + fdm.access_token
+    }
+    print(asa_service_group)
+
+    print(payload)
