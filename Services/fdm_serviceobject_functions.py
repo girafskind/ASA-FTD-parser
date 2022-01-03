@@ -8,7 +8,7 @@
 import json
 import sys
 import requests.exceptions
-from Services import named_ports_translator
+from Services import named_ports_translator, icmp_translator
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -40,7 +40,16 @@ def parse_asa_portvalue(asaserviceobj):
             "protocol": asaserviceobj['value'].upper(),
             "url-tail": "protocols"
         }
-    elif asaserviceobj['kind']
+    elif asaserviceobj['kind'] == 'object#ICMPServiceObj':
+
+        icmp_for_fdm = icmp_translator.translate_icmp(asaserviceobj)
+
+        service_dict = {
+            "name": asaserviceobj['name'],
+            "type": "icmpv4portobject",
+            "icmpv4Type": "DESTINATION_UNREACHABLE",
+            "icmpv4Code": "HOST_UNREACHABLE"
+        }
 
     return service_dict
 
