@@ -45,11 +45,9 @@ def parse_asa_portvalue(asaserviceobj):
         icmp_for_fdm = icmp_translator.translate_icmp(asaserviceobj)
 
         service_dict = {
-            "name": asaserviceobj['name'],
-            "type": "icmpv4portobject",
-            "icmpv4Type": "DESTINATION_UNREACHABLE",
-            "icmpv4Code": "HOST_UNREACHABLE"
+            "name": asaserviceobj['name']
         }
+        service_dict.update(icmp_for_fdm)
 
     return service_dict
 

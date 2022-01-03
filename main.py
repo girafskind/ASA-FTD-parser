@@ -21,16 +21,17 @@ def main():
     fdm1 = initialize_fdm()
     asa1 = initialize_asa()
 
-    #migration1 = Migration.MigrationStatus()
-    #parse_objects(asa1, fdm1, migration1)
+    migration1 = Migration.MigrationStatus()
+    parse_objects(asa1, fdm1, migration1)
 
     """
     TEST SCRIPT START
-    """
-    asa_service_groups = asa_networkservice_functions.get_all_service_groups(asa1)
+    
+    asa_service_groups = asa_networkservice_functions.get_all_service_objects(asa1)
     for service_group in asa_service_groups:
-        fdm_serviceobject_functions.create_fdm_port_group(fdm1, service_group)
-    """
+        print(service_group)
+        print(fdm_serviceobject_functions.parse_asa_portvalue(service_group))
+    
     TEST SCRIPT END
     """
 

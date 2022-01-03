@@ -8,30 +8,31 @@
 import json
 
 
-def translate_icmp(icmp_object):
+def translate_icmp(icmp_input):
     with open("JSON/icmp-types.JSON", "r") as json_icmp:
         icmp_dict = json.load(json_icmp)
 
-    icmp_value = icmp_object['value'].split("/")
-    icmp_code = ""
+    icmp_value = icmp_input['value'].split("/")
 
-    if icmp_object['kind'] == 'object#ICMPServiceObj':
-        icmp_type = icmp_dict['ipv4'][icmp_value[1]]
-        if len(icmp_type) == 3:
-            icmp_code = icmp_dict['ipv4'][icmp_value[1]]
-    elif icmp_object['kind'] == 'object#ICMP6ServiceObj':
+    icmp_object = {"icmpv4Code": None}
+
+    if icmp_input['kind'] == 'object#ICMPServiceObj':
+        icmp_object['icmpv4Type'] = icmp_dict['ipv4'][icmp_value[1]]['fdm-name']
+        icmp_object['type'] = 'icmpv4portobject'
+        if len(icmp_value) == 3:
+            icmp_object['icmpv4Code'] = icmp_dict['ipv4'][icmp_value[1]]['codes'][icmp_value[2]]
+        elif len(icmp_value) == 2:
+            icmp_object['icmpv4Type'] = icmp_dict['ipv4'][icmp_value[1]]['fdm-name']
+    elif icmp_input['kind'] == 'object#ICMP6ServiceObj':
         pass
 
-    print(icmp_type)
-    print(icmp_code)
+    return icmp_object
 
 
-icmp_object =  {
+icmp_test_object = {
       "kind": "object#ICMPServiceObj",
       "selfLink": "https://192.168.2.16:4443/api/objects/networkservices/ICMP-TEST",
       "name": "ICMP-TEST",
-      "value": "icmp/unreachable/8",
+      "value": "icmp/echo",
       "objectId": "ICMP-TEST"
     }
-
-translate_icmp(icmp_object)
