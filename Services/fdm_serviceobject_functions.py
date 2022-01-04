@@ -8,10 +8,34 @@
 import json
 import sys
 import requests.exceptions
+from Services import asa_networkservice_functions
 from Services import named_ports_translator, icmp_translator
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
+
+def parse_asa_service_group(asa_service_group):
+    """
+    Parses the service group members from the ASA to FDM syntax
+    :param asa_service_group: The ASA service group.
+    :return: FDM syntax group member
+    """
+
+    if asa_service_group['kind'] == "object#TcpUdpServiceObj":
+        pass
+
+    elif asa_service_group['kind'] == "object#NetworkProtocolObj":
+        member_dict = {
+            'type': 'protocolobject',
+            'name': asa_service_group['value']
+        }
+
+        return member_dict
+
+    elif asa_service_group['kind'] == "object#ICMPServiceObj":
+        pass
+    elif asa_service_group['kind'] == "object#ICMP6ServiceObj":
+        pass
 
 def parse_asa_portvalue(asaserviceobj):
     """
@@ -45,9 +69,21 @@ def parse_asa_portvalue(asaserviceobj):
         icmp_for_fdm = icmp_translator.translate_icmp(asaserviceobj)
 
         service_dict = {
-            "name": asaserviceobj['name']
+            "name": asaserviceobj['name'],
+            "url-tail": "icmpv4ports"
         }
         service_dict.update(icmp_for_fdm)
+    elif asaserviceobj['kind'] == 'object#ICMP6ServiceObj':
+
+        icmp_for_fdm = icmp_translator.translate_icmp(asaserviceobj)
+
+        service_dict = {
+            "name": asaserviceobj['name'],
+            "url-tail": "icmpv6ports"
+        }
+        service_dict.update(icmp_for_fdm)
+
+
 
     return service_dict
 
@@ -99,28 +135,106 @@ def create_fdm_port_object(fdm, asaserviceobj, migration):
     return response.json()
 
 
-def create_fdm_port_group(fdm, asa_service_group):
+def create_fdm_port_group(fdm, asa, asa_service_group, migration):
     """
     This function creates a service group
     :param fdm: The target FDM
-    :param asaservicegroup: The ASA service group
+    :param asa_service_group: The ASA service group
     :param migration: Migration status
     :return:
     """
-
-    payload = {
-        'name' : asa_service_group['name']
-    }
-
-    for service in asa_service_group['members']:
-        print(service)
-
     url = fdm.url() + "/api/fdm/v6/object/portgroups"
 
     headers = {
         'Accept': 'application/json',
         'Authorization': 'Bearer ' + fdm.access_token
     }
-    print(asa_service_group)
 
-    print(payload)
+    prepayload = {
+        'name' : asa_service_group['name'],
+        'type': 'portobjectgroup',
+        'objects': []
+    }
+
+    for service in asa_service_group['members']:
+        if service['kind'] == "objectRef#TcpUdpServiceObj":
+            service_protocol = asa_networkservice_functions.clarify_tcp_udp_service(service, asa)
+            prepayload['objects'].append(
+                {
+                    'name': service['objectId'],
+                    'type': service_protocol
+                }
+            )
+        elif service['kind'] == "NetworkProtocol" and service['value'] != "icmp":
+            prepayload['objects'].append(
+                {
+                    'name': service['value'].upper(),
+                    'type': 'protocolobject'
+                }
+            )
+        elif service['kind'] == "NetworkProtocol" and service['value'] == "icmp":
+            prepayload['objects'].append(
+                {
+                    'name': service['value'].upper(),
+                    'type': 'icmpv4portobject'
+                }
+            )
+        elif service['kind'] == "TcpUdpService" and service['value'].split("/")[0] != "tcp-udp":
+            name_list = service['value'].split("/")
+            synthetic_asa_object = {
+                'kind': "object#TcpUdpServiceObj",
+                'name': name_list[0] + "_" + name_list[1],
+                'value': service['value']
+            }
+
+            create_fdm_port_object(fdm, synthetic_asa_object, migration)
+            prepayload['objects'].append(
+                {
+                    'name': name_list[0] + "_" + name_list[1],
+                    'type': name_list[0] + "portobject"
+                }
+            )
+        elif service['kind'] == "TcpUdpService" and service['value'].split("/")[0] == "tcp-udp":
+            name_list[0] = service['value'].split("/")[0].split("-")[0]+"/"+service['value'].split("/")[1]
+            name_list[1] = service['value'].split("/")[1].split("-")[0] + "/" + service['value'].split("/")[1]
+
+            for name in name_list:
+                synthetic_asa_object = {
+                    'kind': "object#TcpUdpServiceObj",
+                    'name': name.replace("/","-"),
+                    'value': service['value']
+                }
+
+                create_fdm_port_object(fdm, synthetic_asa_object, migration)
+                prepayload['objects'].append(
+                    {
+                        'name': name.replace("/","-"),
+                        'type': name.split("/")[0] + "portobject"
+                    }
+                )
+
+
+    payload = json.dumps(prepayload)
+    print(prepayload)
+
+    try:
+        response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+        response.raise_for_status()
+    except requests.exceptions.HTTPError:
+        if response.status_code == 400:
+            print("Got HTTP error 400, bad request or login credentials")
+        if response.status_code == 422:
+            reason = json.loads(response.content)['error']['messages'][0]['description']
+            migration.add_duplicate_network(payload, reason)
+            return
+        sys.exit()
+    except requests.exceptions.ConnectionError as errc:
+        print("An error connecting to API occurered: " + repr(errc))
+        sys.exit()
+    except requests.exceptions:
+        print("Something else happened")
+        sys.exit()
+
+    migration.add_migrated_service_group()
+    print(response)
+    return response.json()

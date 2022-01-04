@@ -24,7 +24,12 @@ def translate_icmp(icmp_input):
         elif len(icmp_value) == 2:
             icmp_object['icmpv4Type'] = icmp_dict['ipv4'][icmp_value[1]]['fdm-name']
     elif icmp_input['kind'] == 'object#ICMP6ServiceObj':
-        pass
+        icmp_object['icmpv6Type'] = icmp_dict['ipv6'][icmp_value[1]]['fdm-name']
+        icmp_object['type'] = 'icmpv6portobject'
+        if len(icmp_value) == 3:
+            icmp_object['icmpv6Code'] = icmp_dict['ipv6'][icmp_value[1]]['codes'][icmp_value[2]]
+        elif len(icmp_value) == 2:
+            icmp_object['icmpv6Type'] = icmp_dict['ipv6'][icmp_value[1]]['fdm-name']
 
     return icmp_object
 
