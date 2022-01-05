@@ -151,12 +151,14 @@ def create_fdm_port_group(fdm, asa, asa_service_group, migration):
     }
 
     prepayload = {
-        'name' : asa_service_group['name'],
+        'name' : 'Service_group_' + asa_service_group['name'],
         'type': 'portobjectgroup',
         'objects': []
     }
 
     for service in asa_service_group['members']:
+        print(service)
+
         if service['kind'] == "objectRef#TcpUdpServiceObj":
             service_protocol = asa_networkservice_functions.clarify_tcp_udp_service(service, asa)
             prepayload['objects'].append(
@@ -173,6 +175,14 @@ def create_fdm_port_group(fdm, asa, asa_service_group, migration):
                 }
             )
         elif service['kind'] == "NetworkProtocol" and service['value'] == "icmp":
+            synthetic_asa_object = {
+                'kind': 'object#ICMPServiceObj',
+                'name': 'icmp',
+                'value': 'icmp'
+            }
+
+            create_fdm_port_object(fdm, synthetic_asa_object, migration)
+
             prepayload['objects'].append(
                 {
                     'name': service['value'].upper(),
@@ -194,28 +204,45 @@ def create_fdm_port_group(fdm, asa, asa_service_group, migration):
                     'type': name_list[0] + "portobject"
                 }
             )
+        elif service['kind'] == "ICMPService":
+            icmp_type = service['value'].split("/")[0]
+            icmp_code = service['value'].split("/")[1]
+
+            synthetic_asa_object = {
+                'kind': "object#ICMPServiceObj",
+                'name': icmp_type + "-" + icmp_code,
+                'value': service['value']
+            }
+
+            create_fdm_port_object(fdm, synthetic_asa_object, migration)
+            prepayload['objects'].append(
+                {
+                    'name': icmp_type + '-' + icmp_code,
+                    'type': 'icmpv4portobject'
+                }
+            )
+
         elif service['kind'] == "TcpUdpService" and service['value'].split("/")[0] == "tcp-udp":
-            name_list[0] = service['value'].split("/")[0].split("-")[0]+"/"+service['value'].split("/")[1]
-            name_list[1] = service['value'].split("/")[1].split("-")[0] + "/" + service['value'].split("/")[1]
+            name_list = []
+            name_list.append(service['value'].split("/")[0].split("-")[0]+"/"+service['value'].split("/")[1])
+            name_list.append(service['value'].split("/")[0].split("-")[1] + "/" + service['value'].split("/")[1])
 
             for name in name_list:
                 synthetic_asa_object = {
                     'kind': "object#TcpUdpServiceObj",
                     'name': name.replace("/","-"),
-                    'value': service['value']
+                    'value': name
                 }
 
                 create_fdm_port_object(fdm, synthetic_asa_object, migration)
                 prepayload['objects'].append(
                     {
-                        'name': name.replace("/","-"),
+                        'name': name.replace("/", "-"),
                         'type': name.split("/")[0] + "portobject"
                     }
                 )
 
-
     payload = json.dumps(prepayload)
-    print(prepayload)
 
     try:
         response = requests.request("POST", url, headers=headers, data=payload, verify=False)
@@ -236,5 +263,5 @@ def create_fdm_port_group(fdm, asa, asa_service_group, migration):
         sys.exit()
 
     migration.add_migrated_service_group()
-    print(response)
+
     return response.json()
