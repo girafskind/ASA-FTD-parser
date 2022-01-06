@@ -1,0 +1,274 @@
+{
+  "ipv4": {
+    "echo-reply": {
+      "fdm-name": "ECHO_REPLY"
+    },
+    "unreachable": {
+      "fdm-name": "DESTINATION_UNREACHABLE",
+      "codes": {
+        "0": "NET_UNREACHABLE",
+        "1": "HOST_UNREACHABLE",
+        "2": "PROTOCOL_UNREACHABLE",
+        "3": "PORT_UNREACHABLE",
+        "4": "FRAGMENTATION_NEEDED",
+        "5": "SOURCE_ROUTE_FAILED",
+        "6": "DEST_NETWORK_UNKNOWN",
+        "7": "DEST_HOST_UNKNOWN",
+        "8": "SRC_HOST_ISOLATED",
+        "9": "COMMUNICATION_DEST_NET_PROHIBITED",
+        "10": "COMMUNICATION_DEST_HOST_PROHIBITED",
+        "11": "DEST_NET_UNREACHABLE_FOR_TOS",
+        "12": "DEST_HOST_UNREACHABLE_FOR_TOS",
+        "13": "COMM_ADMINISTRATIVELY_PROHIBITED",
+        "14": "HOST_PRECEDENCE_VIOLATION",
+        "15": "PRECEDENCE_CUTOFF"
+      }
+    },
+    "source-quench": {
+      "fdm-name": "SOURCE_QUENCH"
+    },
+    "redirect": {
+      "fdm-name": "REDIRECT_MESSAGE",
+      "codes": {
+        "0": "REDIRECT_DATAGRAM_NETWORK",
+        "1": "REDIRECT_DATAGRAM_HOST",
+        "2": "REDIRECT_DATAGRAM_SERVICE_NETWORK",
+        "3": "REDIRECT_DATAGRAM_SERVICE_HOST"
+      }
+    },
+    "alternate-address": {
+      "fdm-name": "ALTERNATE_HOST_ADDRESS",
+      "codes": {
+        "0": "ALTERNATE_HOST_ADDR"
+      }
+    },
+    "echo": {
+      "fdm-name": "ECHO_REQUEST"
+    },
+    "router-advertisement": {
+      "fdm-name": "ROUTER_ADVERTISEMENT",
+      "codes": {
+        "0": "NORMAL_ROUTER_ADV",
+        "16": "DO_NOT_ROUTE_COMMON_TRAFFIC"
+      }
+    },
+    "router-solicitation": {
+      "fdm-name": "ROUTER_SOLICITATION"
+    },
+    "time-exceeded": {
+      "fdm-name": "TIME_EXCEEDED",
+      "codes": {
+        "0": "TTL_EXPIRED_TRANSIT",
+        "1": "FRAG_ASSEMBLY"
+      }
+    },
+    "parameter-problem": {
+      "fdm-name": "PARAMETER_PROBLEM",
+      "codes": {
+        "0": "PTR_ERROR",
+        "1": "MISSING_REQD_OPTION",
+        "2": "BAD_LENGTH"
+      }
+    },
+    "timestamp-request": {
+      "fdm-name": "TIMESTAMP"
+    },
+    "timestamp-reply": {
+      "fdm-name": "TIMESTAMP_REPLY"
+    },
+    "traceroute": {
+      "fdm-name": "TRACEROUTE"
+    },
+    "conversion-error": {
+      "fdm-name": "DATAGRAM_CONVERSION_ERROR"
+    },
+    "information-request": {
+      "fdm-name": "INFO_REQUEST"
+    },
+    "information-reply": {
+      "fdm-name": "INFO_REPLY"
+    },
+    "mask-reply": {
+      "fdm-name": "ADDR_MASK_REPLY"
+    },
+    "mask-request": {
+      "fdm-name": "ADDR_MASK_REQUEST"
+    },
+    "mobile-redirect": {
+      "fdm-name": "MOBILE_HOST_REDIRECT"
+    },
+    "33": {
+      "fdm-name": "WHERE_ARE_YOU"
+    },
+    "34": {
+      "fdm-name": "HERE_I_AM"
+    },
+    "35": {
+      "fdm-name": "MOBILE_REG_REQUEST"
+    },
+    "36": {
+      "fdm-name": "MOBILE_REG_REPLY"
+    },
+    "37": {
+      "fdm-name": "DOMAIN_NAME_REQUEST"
+    },
+    "38": {
+      "fdm-name": "DOMAIN_NAME_REPLY"
+    },
+    "39": {
+      "fdm-name": "SKIP_ALGORITHM_DISCOVERY_PROTOCOL"
+    },
+    "40": {
+      "fdm-name": "PHOTURIS",
+      "codes": {
+        "0": "BAD_SPI",
+        "1": "AUTH_FAILED",
+        "2": "DECOMPRESSION_FAILED",
+        "3": "DECRYPTION_FAILED",
+        "4": "NEED_AUTHENTICATION",
+        "5": "NEED_AUTHORIZATION"
+      }
+    },
+    "41": {
+      "fdm-name": "EXPERIMENTAL_MOB_PROTOCOLS"
+    }
+  },
+  "ipv6": {
+    "echo": {
+      "fdm-name": "ECHO_REQUEST"
+    },
+    "echo-reply": {
+      "fdm-name": "ECHO_REPLY"
+    },
+    "membership-query": {
+      "fdm-name": "MULTICAST_LISTENER_QUERY"
+    },
+    "membership-reduction": {
+      "fdm-name": "MULTICAST_LISTENER_DONE"
+    },
+    "membership-report": {
+      "fdm-name": "MULTICAST_LISTENER_REPORT"
+    },
+    "neighbor-advertisement": {
+      "fdm-name": "NEIGHBOUR_ADVERTISEMENT"
+    },
+    "neighbor-redirect": {
+      "fdm-name": "REDIRECT_MESSAGE"
+    },
+    "neighbor-solicitation": {
+      "fdm-name": "NEIGHBOUR_SOLICITATION"
+    },
+    "packet-too-big": {
+      "fdm-name": "PACKET_TOO_BIG"
+    },
+    "parameter-problem": {
+      "fdm-name": "PARAMETER_PROBLEM",
+      "codes": {
+        "0": "ERRONEOUS_HEADER_ENCOUNTERED",
+        "1": "UNRECOGNIZED_NEXT_HEADER_TYPE_ENCOUNTERED",
+        "2": "UNRECOGNIZED_IPv6_OPTION_ENCOUNTERED"
+      }
+    },
+    "router-advertisement": {
+      "fdm-name": "NEIGHBOUR_ADVERTISEMENT"
+    },
+    "router-renumbering": {
+      "fdm-name": "ROUTER_RENUMBERING",
+      "codes": {
+        "0": "ROUTER_RENUMBERING_COMMAND",
+        "1": "ROUTER_RENUMBERING_RESULT",
+        "255": "SEQUENCE_NUMBER_RESET"
+      }
+    },
+    "router-solicitation": {
+      "fdm-name": "ROUTER_SOLICITATION"
+    },
+    "time-exceeded": {
+      "fdm-name": "TIME_EXCEEDED",
+      "codes": {
+        "0": "HOP_LIMIT_EXCEEDED",
+        "1": "FRAGMENT_REASSEMBLY_TIME_EXCEEDED"
+      }
+    },
+    "unreachable": {
+      "fdm-name": "DESTINATION_UNREACHABLE",
+      "codes": {
+        "0": "NO_ROUTE_DEST",
+        "1": "COMMUNICATION_PROHIBITED",
+        "2": "BEYOND_SCOPE_SRC_ADDR",
+        "3": "ADDRESS_UNREACHABLE",
+        "4": "PORT_UNREACHABLE",
+        "5": "SOURCE_ADDRESS_FAILED",
+        "6": "REJECT_ROUTE",
+        "7": "ERROR_SRC_ROUTING_HEADER"
+      }
+    },
+    "139": {
+      "fdm-name": "ICMP_NODE_INFO_QUERY",
+      "codes": {
+        "0": "DATA_CONTAINS_IPv6",
+        "1": "DATA_CONTAINS_NAME",
+        "2": "DATA_CONTAINS_IPv4"
+      }
+    },
+    "140": {
+      "fdm-name": "ICMP_NODE_INFO_RESPONSE",
+      "codes": {
+        "0": "SUCCESSFUL_REPLY",
+        "1": "RESPONDER_REFUSES_ANSWER",
+        "2": "QTYPE_UNKNOWN"
+      }
+    },
+    "141": {
+      "fdm-name": "INVERSE_NEIGHBOR_DISCOVERY_SOLICITATION"
+    },
+    "142": {
+      "fdm-name": "INVERSE_NEIGHBOR_DISCOVERY_ADVERTISEMENT"
+    },
+    "143": {
+      "fdm-name": "VER2_MULTICAST_LISTENER_REPORT"
+    },
+    "144": {
+      "fdm-name": "HOME_AGENT_ADDR_DISCOVERY_REQ"
+    },
+    "145": {
+      "fdm-name": "HOME_AGENT_ADDR_DISCOVERY_REPLY"
+    },
+    "146": {
+      "fdm-name": "MOBILE_PREFIX_SOLICITATION"
+    },
+    "147": {
+      "fdm-name": "MOBILE_PREFIX_ADVERTISEMENT"
+    },
+    "148": {
+      "fdm-name": "CERT_PATH_SOLICITATION"
+    },
+    "149": {
+      "fdm-name": "CERT_PATH_ADVERTISEMENT"
+    },
+    "150": {
+      "fdm-name": "ICMP_EXP_MOBILITY_PROTOCOLS"
+    },
+    "151": {
+      "fdm-name": "MULTICAST_ROUTER_ADVERTISEMENT"
+    },
+    "152": {
+      "fdm-name": "MULTICAST_ROUTER_SOLICITATION"
+    },
+    "153": {
+      "fdm-name": "MULTICAST_ROUTER_TERMINATION"
+    },
+    "154": {
+      "fdm-name": "FMIPv6_MSG"
+    },
+    "155": {
+      "fdm-name": "RPL_CTRL_MSG"
+    },
+    "200": {
+      "fdm-name": "PRIVATE_EXPERIMENTATION"
+    },
+    "201": {
+      "fdm-name": "PRIVATE_EXPERIMENTATION_EXTENDED"
+    }
+  }
+}

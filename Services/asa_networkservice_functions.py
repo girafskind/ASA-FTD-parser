@@ -9,6 +9,29 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
+def clarify_tcp_udp_service(service_member, asa):
+    """
+    Function to clarify if a TcpUdpObject is either TCP or UDP
+    :param service_member: The ASA object member of a group
+    :param asa: The ASA where the object is found
+    :return: Returns either 'tcpportobject' or 'udpportobject'
+    """
+
+    url = service_member['refLink']
+
+    headers = {
+        'Content-Type': 'application/json',
+        'User-agent': 'REST API Agent',
+        'X-Auth-Token': asa.token
+    }
+
+    response = requests.request("GET", url, headers=headers, verify=False).json()
+
+    protocol_value = response['value'].split("/")[0] + "portobject"
+
+    return protocol_value
+
+
 def get_number_of_asa_service_objects(asa):
     """
     Returns the number of service objects the given ASA object has configured.

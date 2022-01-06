@@ -24,13 +24,32 @@ def main():
     migration1 = Migration.MigrationStatus()
     parse_objects(asa1, fdm1, migration1)
 
+    """
+    TEST SCRIPT START
+    
+    test_fdm1 = initialize_fdm()
+    test_asa1 = initialize_asa()
+    test_migration1 = Migration.MigrationStatus()
+
+    asa_service_objects = asa_networkservice_functions.get_all_service_objects(test_asa1)
+
+    for service_object in asa_service_objects:
+        fdm_serviceobject_functions.create_fdm_port_object(test_fdm1, service_object, test_migration1)
+
+    asa_service_groups = asa_networkservice_functions.get_all_service_groups(test_asa1)
+    for service_group in asa_service_groups:
+        fdm_serviceobject_functions.create_fdm_port_group(test_fdm1, test_asa1, service_group, test_migration1)
+
+    
+    TEST SCRIPT END
+    """
 
 def parse_objects(asa, fdm, mig):
     """
     Function which first get all objects from ASA as a list, then creates them on the FDM.
     Then gets all object-groups from ASA as a list, then creates them on the FDM.
     An object-group cannot contain a object which does not exist.
-    :param asa: Soruce ASA
+    :param asa: Source ASA
     :param fdm: Destination FDM
     :param mig: Migration status
     :return: Nothing
@@ -69,6 +88,14 @@ def parse_objects(asa, fdm, mig):
         fdm_serviceobject_functions.create_fdm_port_object(fdm, service_object, mig)
         print("Migrated " + str(mig.migrated_service_objects) + " services.")
     print("Service objects created.")
+
+    print("Gathering service groups from ASA: " + asa.ip)
+    asa_service_groups = asa_networkservice_functions.get_all_service_groups(asa)
+    print("Creating service object-groups on FTD:" + fdm.ip)
+    for service_group in asa_service_groups:
+        fdm_serviceobject_functions.create_fdm_port_group(fdm, asa, service_group, mig)
+        print("Migrated " + str(mig.migrated_service_object_groups) + " service groups.")
+    print("Service groups created.")
 
     print("####### Status #######")
     print("Migrated " + str(mig.migrated_network_objects) + " network objects")
