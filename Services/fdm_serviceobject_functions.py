@@ -57,6 +57,14 @@ def parse_asa_portvalue(asaserviceobj):
             "port": port,
             "url-tail": protocol + "ports"
         }
+    elif asaserviceobj['kind'] == "object#NetworkProtocolObj" and asaserviceobj['value'] == "icmp":
+        icmp_for_fdm = icmp_translator.translate_icmp(asaserviceobj)
+
+        service_dict = {
+            "name": asaserviceobj['name'],
+            "url-tail": "icmpv4ports"
+        }
+        service_dict.update(icmp_for_fdm)
     elif asaserviceobj['kind'] == "object#NetworkProtocolObj":
         service_dict = {
             "name": asaserviceobj['name'],
@@ -118,6 +126,7 @@ def create_fdm_port_object(fdm, asaserviceobj, migration):
         if response.status_code == 404:
             print("Got HTTP error 404, not found")
         if response.status_code == 422:
+            print("Got HTTP error 422, duplicate element: " + payload)
             reason = json.loads(response.content)['error']['messages'][0]['description']
             migration.add_duplicate_service(payload, reason)
             return
@@ -139,6 +148,7 @@ def create_fdm_port_group(fdm, asa, asa_service_group, migration):
     """
     This function creates a service group
     :param fdm: The target FDM
+    :param asa: The source ASA
     :param asa_service_group: The ASA service group
     :param migration: Migration status
     :return:
@@ -157,8 +167,6 @@ def create_fdm_port_group(fdm, asa, asa_service_group, migration):
     }
 
     for service in asa_service_group['members']:
-        print(service)
-
         if service['kind'] == "objectRef#TcpUdpServiceObj":
             service_protocol = asa_networkservice_functions.clarify_tcp_udp_service(service, asa)
             prepayload['objects'].append(
@@ -168,6 +176,14 @@ def create_fdm_port_group(fdm, asa, asa_service_group, migration):
                 }
             )
         elif service['kind'] == "NetworkProtocol" and service['value'] != "icmp":
+            synthetic_asa_object = {
+                'kind': 'object#NetworkProtocolObj',
+                'name': service['value'].upper(),
+                'value': service['value']
+            }
+
+            create_fdm_port_object(fdm, synthetic_asa_object, migration)
+
             prepayload['objects'].append(
                 {
                     'name': service['value'].upper(),

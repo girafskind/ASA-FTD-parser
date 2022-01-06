@@ -26,13 +26,13 @@ def create_fdm_network_object(fdm, asanetobj, migration):
 
     object_type = ""
 
-    if asanetobj['host']['kind'] == 'IPv4Network':
+    if asanetobj['host']['kind'] in ('IPv4Network', 'IPv6Network'):
         object_type = "NETWORK"
-    elif asanetobj['host']['kind'] == 'IPv4Address':
+    elif asanetobj['host']['kind'] in ('IPv4Address', 'IPv6Address'):
         object_type = "HOST"
-    elif asanetobj['host']['kind'] == 'IPv4FQDN':
+    elif asanetobj['host']['kind'] in ('IPv4FQDN', 'IPv6FQDN'):
         object_type = "FQDN"
-    elif asanetobj['host']['kind'] == 'IPv4Range':
+    elif asanetobj['host']['kind'] in ('IPv4Range', 'IPv6Range'):
         object_type = "RANGE"
 
     payload = json.dumps({

@@ -91,6 +91,7 @@ def parse_objects(asa, fdm, mig):
 
     print("Gathering service groups from ASA: " + asa.ip)
     asa_service_groups = asa_networkservice_functions.get_all_service_groups(asa)
+    print("Creating service object-groups on FTD:" + fdm.ip)
     for service_group in asa_service_groups:
         fdm_serviceobject_functions.create_fdm_port_group(fdm, asa, service_group, mig)
         print("Migrated " + str(mig.migrated_service_object_groups) + " service groups.")
