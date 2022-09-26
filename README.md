@@ -26,5 +26,8 @@ How many objects migrated and how many skipped, as well as a list of the skipped
 
 
 Written in Python 3.9
+Supported ASA version 9.x+
+Supported FDM verison 7.x+
+The machine that executes this script will need to have API access to both the ASA and the FTD.
 
 Regards girafskind

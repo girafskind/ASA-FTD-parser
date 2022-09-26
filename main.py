@@ -24,25 +24,6 @@ def main():
     migration1 = Migration.MigrationStatus()
     parse_objects(asa1, fdm1, migration1)
 
-    """
-    TEST SCRIPT START
-    
-    test_fdm1 = initialize_fdm()
-    test_asa1 = initialize_asa()
-    test_migration1 = Migration.MigrationStatus()
-
-    asa_service_objects = asa_networkservice_functions.get_all_service_objects(test_asa1)
-
-    for service_object in asa_service_objects:
-        fdm_serviceobject_functions.create_fdm_port_object(test_fdm1, service_object, test_migration1)
-
-    asa_service_groups = asa_networkservice_functions.get_all_service_groups(test_asa1)
-    for service_group in asa_service_groups:
-        fdm_serviceobject_functions.create_fdm_port_group(test_fdm1, test_asa1, service_group, test_migration1)
-
-    
-    TEST SCRIPT END
-    """
 
 def parse_objects(asa, fdm, mig):
     """
