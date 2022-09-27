@@ -47,3 +47,5 @@ How many objects migrated and how many skipped, as well as a list of the skipped
 The machine that executes this script will need to have API access to both the ASA and the FTD.
 
 Regards girafskind
+
+[![published](https://static.production.devnetcloud.com/codeexchange/assets/images/devnet-published.svg)](https://developer.cisco.com/codeexchange/github/repo/girafskind/ASA-FTD-parser)
